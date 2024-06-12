@@ -1,0 +1,10 @@
+[global.databases]
+[default]
+    address = "localhost"
+    port = 5432
+    username = "postgres"
+    password = "password"
+    database = "mydatabase"
+
+[default.templates]
+root = "templates"

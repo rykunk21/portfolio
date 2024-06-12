@@ -1,0 +1,7 @@
+[watch]
+# Watch for changes in Rust files
+ignore = ["target/*", "Rocket.toml", "src/*"]
+
+# Specify the command to run on file changes
+[tasks.dev]
+command = "cargo run"
