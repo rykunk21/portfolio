@@ -4,21 +4,42 @@ body {
     /* Ensure the body takes up the full viewport */
     margin: 0;
     height: 100vh;
+    width: 100vw;
+    background-color: #e3e3e7;
+}
+
+
+.hero {
+    
+    width: 80%;
+    height: 100vh;
+    margin: auto;
+}
+
+
+
+.container {
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
+    flex-wrap: wrap;
+    width: 80%;
+    margin: auto;
 }
 
-.container {
-    /* Additional styles for the container */
-    width: 80%; /* Adjust as needed */
-    max-width: 1200px; /* Example max-width */
-    background-color: #f0f0f0; /* Example background color */
+.card {
+    width: 250px;
+    height: 300px;
+    max-width: 1200px; 
+    background-color: #FFFFFF; 
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Example box shadow */
-    display: flex;
-    flex-direction: column; /* Ensure children stack vertically */
-    align-items: center; /* Center children horizontally */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Apply transition to transform and box-shadow properties */
 }
 
+.card:hover {
+    transform: translate(-10px, -5px); /* Move left by 10px and up by 5px */
+    box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5); /* Adjust the box-shadow */
+}

@@ -1,0 +1,10 @@
+
+[serve]
+port = 8080
+
+[watch]
+ignore = ["static"]
+
+[[copy]]
+source = "static"
+destination = "static"

@@ -50,10 +50,10 @@ pub fn portfolio() -> Html {
     let repos = use_state(|| vec![]);
     let error = use_state(|| None);
 
-    let fetch_repos = {
+    {
         let repos = repos.clone();
         let error = error.clone();
-        Callback::from(move |_| {
+        use_effect(move || {
             let repos = repos.clone();
             let error = error.clone();
             spawn_local(async move {
@@ -62,16 +62,16 @@ pub fn portfolio() -> Html {
                     Err(err) => error.set(Some(err.to_string())),
                 }
             });
-        })
-    };
+            || ()
+        });
+    }
 
     html! {
         <>
-            <button onclick={fetch_repos}>{ "Fetch Repos" }</button>
             { if !repos.is_empty() {
                 html! {
                     <div class="container">
-                        { for repos.iter().map(|repo| html! { <Repo key={repo.id} ..repo.clone() /> }) }                    
+                        { for repos.iter().map(|repo| html! { <Repo key={repo.id} ..repo.clone() /> }) }
                     </div>
                 }
             } else if let Some(err) = error.as_ref() {
