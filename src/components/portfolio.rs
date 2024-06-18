@@ -1,14 +1,15 @@
-use yew::prelude::*;
 use reqwest::Error;
 use serde::Deserialize;
+use yew::prelude::*;
 
 use wasm_bindgen_futures::spawn_local;
 
-#[derive(Properties, PartialEq, Deserialize)]
+#[derive(Clone, Properties, PartialEq, Deserialize)]
 pub struct RepoProps {
-    name: String,
-    html_url: String,
-    description: Option<String>, // description might be null
+    pub id: u32,
+    pub name: String,
+    pub description: Option<String>,
+    pub html_url: String,
 }
 
 #[derive(Default)]
@@ -23,7 +24,7 @@ impl Repositories {
         let url = format!("https://api.github.com/users/{}/repos", username);
         let response = reqwest::get(&url).await?;
         let repos: Vec<RepoProps> = response.json().await?;
-        
+
         Ok(Repositories { repos })
     }
 }
@@ -32,10 +33,14 @@ impl Repositories {
 pub fn repo(props: &RepoProps) -> Html {
     html! {
         <a href={ props.html_url.clone() }>
-            <ul>
-                <li>{ &props.name }</li>
-                <li>{ &props.description.clone().unwrap() }</li>
-            </ul>
+            <div class="card">
+                <h2>{ &props.name }</h2>
+                { if let Some(description) = &props.description {
+                    html! { <h3>{ description }</h3> }
+                } else {
+                    html! {} // Render nothing if description is None
+                }}
+            </div>        
         </a>
     }
 }
@@ -44,7 +49,7 @@ pub fn repo(props: &RepoProps) -> Html {
 pub fn portfolio() -> Html {
     let repos = use_state(|| vec![]);
     let error = use_state(|| None);
-    
+
     let fetch_repos = {
         let repos = repos.clone();
         let error = error.clone();
@@ -60,18 +65,17 @@ pub fn portfolio() -> Html {
         })
     };
 
-
     html! {
         <>
             <button onclick={fetch_repos}>{ "Fetch Repos" }</button>
-            { if !(*repos).is_empty() {
+            { if !repos.is_empty() {
                 html! {
-                    <ul>
-                        { for repos.iter().map(|repo| html! { <li>{ &repo.name }</li> }) }
-                    </ul>
+                    <div class="container">
+                        { for repos.iter().map(|repo| html! { <Repo key={repo.id} ..repo.clone() /> }) }                    
+                    </div>
                 }
-            } else if let Some(error) = &*error {
-                html! { <p>{ error }</p> }
+            } else if let Some(err) = error.as_ref() {
+                html! { <p>{ err }</p> }
             } else {
                 html! { <p>{ "No data" }</p> }
             }}
