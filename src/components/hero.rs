@@ -7,7 +7,7 @@ pub fn hero() -> Html {
     html! {
         <div class="hero">
             <div class="content">
-                <img src="./static/img/cube.svg"/>
+                <img src="./img/cube.svg"/>
             </div>
             <p> {"this is some content"} </p>
         </div>

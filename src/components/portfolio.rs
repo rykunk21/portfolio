@@ -1,5 +1,6 @@
 use reqwest::Error;
 use serde::Deserialize;
+use rand::Rng;
 use yew::prelude::*;
 
 use wasm_bindgen_futures::spawn_local;
@@ -29,21 +30,55 @@ impl Repositories {
     }
 }
 
+#[function_component(Grid)]
+pub fn grid() -> Html {
+    // Generate a 4x4 grid of random colors
+    let mut rng = rand::thread_rng();
+    let colors: Vec<String> = (0..16)
+        .map(|_| {
+            format!(
+                "rgb({}, {}, {})",
+                rng.gen_range(0..256),
+                rng.gen_range(0..256),
+                rng.gen_range(0..256)
+            )
+        })
+        .collect();
+
+    // Create grid items
+    let grid_items = colors.iter().map(|color| {
+        html! {
+            <div class="grid-item" style={format!("background-color: {}", color)}></div>
+        }
+    });
+
+    // Render the grid
+    html! {
+        <div class="grid-container">
+            { for grid_items }
+        </div>
+    }
+}
+
+
 #[function_component(Repo)]
 pub fn repo(props: &RepoProps) -> Html {
     html! {
         <a href={ props.html_url.clone() }>
             <div class="card">
+                
                 <h2>{ &props.name }</h2>
                 { if let Some(description) = &props.description {
                     html! { <h3>{ description }</h3> }
                 } else {
                     html! {} // Render nothing if description is None
                 }}
+                
             </div>        
         </a>
     }
 }
+
 
 #[function_component(Portfolio)]
 pub fn portfolio() -> Html {

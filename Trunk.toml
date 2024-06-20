@@ -1,10 +1,6 @@
-
-[serve]
-port = 8080
-
-[watch]
-ignore = ["static"]
+[build]
+dist = "dist"
 
 [[copy]]
 source = "static"
-destination = "static"
+destination = "dist"
