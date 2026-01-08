@@ -54,11 +54,18 @@ pub async fn init() -> Result<(), surrealdb::Error> {
 }
 
 async fn connect() -> Result<(), surrealdb::Error> {
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let database_url = env::var("DATABASE_URL")
+        .expect("DATABASE_URL must be set")
+        .trim()
+        .to_string();
+
+    eprintln!("🔍 DATABASE_URL = '{}'", database_url);
+    eprintln!("🔍 DATABASE_URL bytes = {:?}", database_url.as_bytes());
+
     let mut failures = 0;
 
     loop {
-        let res = DB.connect::<Ws>(&database_url).await;
+        let res = DB.connect::<Ws>("surrealdb:8080").await;
         match res {
             Ok(_) => break,
             Err(e) => {

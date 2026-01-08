@@ -2,11 +2,21 @@ use yew::prelude::*;
 
 mod components;
 
+use components::{
+    about::About, audience::Audience, contact::Contact, header::Header, hero::Hero,
+    process::Process,
+};
+
 #[function_component(App)]
 fn app() -> Html {
     html! {
         <>
-            <h1> {"Hello to the new app!"} </h1>
+            <Header />
+            <Hero />
+            <Process />
+            <Audience />
+            <About />
+            <Contact />
         </>
     }
 }
