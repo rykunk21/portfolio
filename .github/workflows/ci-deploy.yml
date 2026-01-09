@@ -1,10 +1,14 @@
-name: CI + Build + Fly Prep
+name: CI + Build + GHCR + Fly Prep
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+permissions:
+  contents: read
+  packages: write
 
 env:
   CARGO_TERM_COLOR: always
@@ -35,7 +39,7 @@ jobs:
             frontend/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      # --- Frontend: Trunk + wasm ---
+      # --- Frontend ---
       - name: Install Trunk
         run: cargo install trunk --locked
 
@@ -47,21 +51,31 @@ jobs:
         working-directory: frontend
         run: trunk build --release
 
-      # --- Backend tests ---
+      # --- Backend ---
       - name: Test backend crate
         working-directory: backend
         run: cargo test
 
-      # --- Docker build (prod image) ---
+      # --- Docker / GHCR ---
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build backend production image
-        run: |
-          docker build \
-            -f backend/Dockerfile.prod \
-            -t myapp-backend:prod \
-            .
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: backend/Dockerfile.prod
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/backend:latest
+            ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
 
       # --- Fly.io tooling ---
       - name: Install flyctl
@@ -72,13 +86,9 @@ jobs:
       - name: Verify flyctl install
         run: flyctl version
 
-      # --- Optional: Fly deploy (commented) ---
-      # Requires FLY_API_TOKEN in GitHub secrets
-      #
+      # --- Optional: Fly deploy ---
       # - name: Deploy to Fly.io
       #   env:
       #     FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       #   run: |
-      #     flyctl deploy \
-      #       --config docker-compose.prod.yml \
-      #       --remote-only
+      #     flyctl deploy --remote-only
