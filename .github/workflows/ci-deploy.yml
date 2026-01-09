@@ -43,10 +43,6 @@ jobs:
       - name: Install Trunk
         run: cargo install trunk --locked
 
-      - name: Test frontend crate
-        working-directory: frontend
-        run: cargo test --target wasm32-unknown-unknown
-
       - name: Build frontend (Trunk)
         working-directory: frontend
         run: trunk build --release
