@@ -60,7 +60,6 @@ async fn connect() -> Result<(), surrealdb::Error> {
         .to_string();
 
     eprintln!("🔍 DATABASE_URL = '{}'", database_url);
-    eprintln!("🔍 DATABASE_URL bytes = {:?}", database_url.as_bytes());
 
     let mut failures = 0;
 
