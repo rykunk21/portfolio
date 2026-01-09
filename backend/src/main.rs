@@ -2,15 +2,13 @@
 extern crate rocket;
 
 use rocket::{fs::FileServer, Config};
-use std::{
-    env,
-    net::{IpAddr, Ipv4Addr},
-};
+use std::{env, net::{IpAddr, Ipv4Addr}};
 
-mod routes;
-use routes::init;
+// Comment out DB and routes
+// mod routes;
+// use routes::init;
 
-mod db;
+// mod db;
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
@@ -20,8 +18,8 @@ async fn main() -> Result<(), rocket::Error> {
         .parse()
         .expect("PORT must be a number");
 
-    // Initialize DB first (async)
-    init().await.expect("Failed to startup db...");
+    // Skip DB initialization
+    // init().await.expect("Failed to startup db...");
 
     // Build Rocket with config
     let _rocket = rocket::custom(Config {
@@ -30,10 +28,8 @@ async fn main() -> Result<(), rocket::Error> {
         ..Config::default()
     })
     .mount("/", FileServer::from("./frontend/dist"))
-    .mount(
-        "/api",
-        routes![routes::create, routes::read, routes::update, routes::delete],
-    )
+    // Skip API routes
+    // .mount("/api", routes![routes::create, routes::read, routes::update, routes::delete])
     .launch()
     .await?;
 
