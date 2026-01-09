@@ -1,0 +1,84 @@
+name: CI + Build + Fly Prep
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # --- Checkout ---
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # --- Rust toolchain ---
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+            frontend/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      # --- Frontend: Trunk + wasm ---
+      - name: Install Trunk
+        run: cargo install trunk --locked
+
+      - name: Test frontend crate
+        working-directory: frontend
+        run: cargo test --target wasm32-unknown-unknown
+
+      - name: Build frontend (Trunk)
+        working-directory: frontend
+        run: trunk build --release
+
+      # --- Backend tests ---
+      - name: Test backend crate
+        working-directory: backend
+        run: cargo test
+
+      # --- Docker build (prod image) ---
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend production image
+        run: |
+          docker build \
+            -f backend/Dockerfile.prod \
+            -t myapp-backend:prod \
+            .
+
+      # --- Fly.io tooling ---
+      - name: Install flyctl
+        run: |
+          curl -L https://fly.io/install.sh | sh
+          echo "$HOME/.fly/bin" >> $GITHUB_PATH
+
+      - name: Verify flyctl install
+        run: flyctl version
+
+      # --- Optional: Fly deploy (commented) ---
+      # Requires FLY_API_TOKEN in GitHub secrets
+      #
+      # - name: Deploy to Fly.io
+      #   env:
+      #     FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      #   run: |
+      #     flyctl deploy \
+      #       --config docker-compose.prod.yml \
+      #       --remote-only
