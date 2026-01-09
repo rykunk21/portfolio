@@ -65,7 +65,7 @@ async fn connect() -> Result<(), surrealdb::Error> {
     let mut failures = 0;
 
     loop {
-        let res = DB.connect::<Ws>("surrealdb:8080").await;
+        let res = DB.connect::<Ws>(&database_url).await;
         match res {
             Ok(_) => break,
             Err(e) => {
