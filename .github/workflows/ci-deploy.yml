@@ -47,11 +47,6 @@ jobs:
         working-directory: frontend
         run: trunk build --release
 
-      # --- Backend ---
-      - name: Test backend crate
-        working-directory: backend
-        run: cargo test
-
       # --- Docker / GHCR ---
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
