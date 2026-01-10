@@ -37,13 +37,11 @@ services:
       - ./:/usr/src/app:rw
       - cargo_cache:/usr/local/cargo/registry
       - cargo_git:/usr/local/cargo/git
-      - target_cache:/usr/src/app/target
 
 volumes:
   surrealdb_data:
   cargo_cache:
   cargo_git:
-  target_cache:
 
 networks:
   backend_network:

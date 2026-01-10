@@ -17,6 +17,8 @@ RUN cargo watch --version && trunk --version && wasm-bindgen --version
 # Set working directory to project root
 WORKDIR /usr/src/app
 
+RUN mkdir -p /usr/src/app/frontend/target
+
 # Expose backend and frontend ports
 EXPOSE 8000 8080
 

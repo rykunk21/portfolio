@@ -1,8 +1,8 @@
-#[macro_use]
-extern crate rocket;
-
 use rocket::{fs::FileServer, Config};
-use std::{env, net::{IpAddr, Ipv4Addr}};
+use std::{
+    env,
+    net::{IpAddr, Ipv4Addr},
+};
 
 // Comment out DB and routes
 // mod routes;
