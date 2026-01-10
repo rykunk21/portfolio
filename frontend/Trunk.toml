@@ -1,6 +1,10 @@
 [build]
 target = "index.html"
 
+[[copy]]
+source = "frontend/design/media"
+dest = "media"
+
 [tools]
 # Force trunk to use the system-installed wasm-bindgen instead of downloading its own
 wasm_bindgen = "0.2.95"

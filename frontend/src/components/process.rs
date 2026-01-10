@@ -61,41 +61,19 @@ pub fn process(props: &ProcessProps) -> Html {
     };
 
     html! {
-        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-            <div class="max-w-7xl mx-auto">
-                <h2 class="text-3xl font-bold text-gray-900 text-center mb-12 md:text-4xl">
-                    { section_title }
-                </h2>
+    <section class="py-8 px-4 sm:px-6 lg:px-8 bg-gray-50">
+                <div class="max-w-6xl mx-auto">
+                    <h2 class="text-2xl font-bold text-gray-900 text-center mb-8 md:text-3xl">
+                        { section_title }
+                    </h2>
 
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-                    // Step 1 - spans 1 column
-                    <div class="sm:col-span-1">
-                        <ProcessCard step={steps[0].clone()} />
-                    </div>
-
-                    // Step 2 - spans 2 columns on small screens, 1 on large
-                    <div class="sm:col-span-1">
-                        <ProcessCard step={steps[1].clone()} />
-                    </div>
-
-                    // Step 3 - spans full width
-                    <div class="sm:col-span-2 lg:col-span-1">
-                        <ProcessCard step={steps[2].clone()} />
-                    </div>
-
-                    // Step 4
-                    <div class="sm:col-span-1 lg:col-span-2">
-                        <ProcessCard step={steps[3].clone()} />
-                    </div>
-
-                    // Step 5
-                    <div class="sm:col-span-1 lg:col-span-1">
-                        <ProcessCard step={steps[4].clone()} />
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        { for steps.iter().map(|step| html! {
+                            <ProcessCard step={step.clone()} />
+                        }) }
                     </div>
                 </div>
-            </div>
-        </section>
-    }
+            </section>    }
 }
 
 #[derive(Properties, PartialEq)]

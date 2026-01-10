@@ -3,12 +3,15 @@ use yew::prelude::*;
 #[function_component(Contact)]
 pub fn contact() -> Html {
     html! {
-        <section class="text-gray-600 body-font relative">
-            <div class="container px-5 py-24 mx-auto">
+    <section
+        class="text-gray-600 body-font relative"
+        style="background-color: var(--almond-cream-50);"
+    >
+            <div class="container px-5 py-12 mx-auto">
                 // Header
                 <div class="flex flex-col text-center w-full mb-12">
                     <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">
-                        { "Contact Us" }
+                        { "Contact Me" }
                     </h1>
                     <p class="lg:w-2/3 mx-auto leading-relaxed text-base">
                         { "Please get in touch" }
@@ -16,7 +19,7 @@ pub fn contact() -> Html {
                 </div>
 
                 // Form
-                <form action="https://fabform.io/f/{form-id}" method="post">
+                <form action="TBD" method="post">
                     <div class="lg:w-1/2 md:w-2/3 mx-auto">
                         <div class="flex flex-wrap -m-2">
                             // Name
@@ -75,17 +78,11 @@ pub fn contact() -> Html {
 
                             // Footer / Contact Info
                             <div class="p-2 w-full pt-8 mt-8 border-t border-gray-200 text-center">
-                                <a
-                                    href="https://veilmail.io/irish-geoff"
-                                    class="text-indigo-500"
-                                >
-                                    { "If you don't like forms click to reveal email address" }
-                                </a>
 
                                 <p class="leading-normal my-5">
-                                    { "49 Smith St." }
+                                    { "" }
                                     <br />
-                                    { "Saint Cloud, MN 56301" }
+                                    { "" }
                                 </p>
 
                                 // Social Icons

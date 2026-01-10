@@ -7,7 +7,7 @@ pub fn about() -> Html {
             // Left Side: Image
             <div class="w-full md:w-5/12 flex justify-center h-full md:justify-end">
                 <img
-                    src="https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D"
+                    src="media/headshot.jpg"
                     alt="About Me"
                     class="w-72 h-96 md:w-80 lg:w-96 object-cover rounded-lg shadow-lg"
                 />
@@ -32,7 +32,8 @@ pub fn about() -> Html {
 
                 // Description
                 <p class="text-gray-700 mb-6 text-sm md:text-base leading-relaxed max-w-2xl mx-auto md:mx-0">
-                    { "I’m Abdul Baset, a passionate Software Developer with expertise in Vue.js, Laravel, & modern web technologies. I specialize in building user-friendly applications that solve real-world problems. With a deep understanding of frontend development, state management, and API integration, I can bring your ideas to life." }
+
+    { "I’m Ryan Kunkel, a software developer who enjoys building thoughtful, reliable applications. I like working with Rust, Linux, and Docker, and I focus on creating user-friendly tools that solve real problems in a maintainable way." }
                 </p>
 
                 // Buttons
