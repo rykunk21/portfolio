@@ -11,9 +11,10 @@ pub fn hero() -> Html {
 
                     <div class="max-w-2xl">
 
-                        <h1 style="color: var(--icy-blue-500);" class="text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 tracking-tight">
+                        <h1 style="color: var(--icy-blue-500);" class="font-header font-bold text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 tracking-tight">
                             { "I design & build " }
-                            <span style="color: var(--blue-bell-500);">{ "human-centered software" }</span>
+                            <br />
+                            <span style="color: var(--mauve-bark-900);">{ "human-centered software" }</span>
                         </h1>
 
                         <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
