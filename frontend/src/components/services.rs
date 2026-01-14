@@ -1,56 +1,64 @@
 use yew::prelude::*;
 
-/// Services section and list
-#[derive(Properties, PartialEq)]
-pub struct Props {
-    #[prop_or_default]
-    pub services: Vec<String>,
-}
-
 #[function_component(Services)]
-pub fn services(props: &Props) -> Html {
-    let services = props.services.clone();
-    let flipped = use_state(|| false);
+pub fn services() -> Html {
+    let flip = use_state(|| 0.0);
 
-    let toggle_flip = {
-        let flipped = flipped.clone();
-        Callback::from(move |_| flipped.set(!*flipped))
+    let on_input = {
+        let flip = flip.clone();
+        Callback::from(move |event: InputEvent| {
+            if let Some(input) = event.target_dyn_into::<web_sys::HtmlInputElement>() {
+                flip.set(input.value_as_number());
+            }
+        })
     };
 
+    let rotation = format!("[transform:rotateY({}deg)]", *flip * 180.0);
+
     html! {
-        <section class={classes!("services", "py-12", "px-4") }>
-            <div class={classes!("max-w-4xl", "mx-auto") }>
-                <h2 class={classes!("text-2xl", "font-semibold") }>{ "Services" }</h2>
+        <div class="flex flex-col items-center gap-8 mt-10 mx-4"> // mx-4 adds horizontal margin
+            // Slider
+            <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={flip.to_string()}
+                oninput={on_input}
+                class="w-64"
+            />
 
-                // Services grid
-                <div class={classes!("mt-6", "grid", "gap-4", "sm:grid-cols-2") }>
-                    { for services.into_iter().map(|s| html! {
-                        <div class={classes!("p-4","border","rounded") }>{ s }</div>
-                    }) }
-                </div>
+            // Flip card container
 
-                // Toggle switch
-                <div class={classes!("mt-8", "flex", "items-center", "gap-2") }>
-                    <label>
-                        <input type="checkbox" onchange={toggle_flip.clone()} />
-                        { " Flip card" }
-                    </label>
-                </div>
-
-                // Flip card
-                <div class={classes!("mt-6", "w-64", "h-32", "perspective")}>
-                    <div class={classes!("relative", "w-full", "h-full", "transition-transform", "duration-500", if *flipped {"rotate-y-180"} else {""})}>
-                        // Front
-                        <div class={classes!("absolute", "w-full", "h-full", "backface-hidden", "bg-blue-500", "flex", "items-center", "justify-center", "text-white", "rounded")}>
-                            { "Front" }
+            <div class="w-4/5 max-w-lg h-[80vh] sm:h-64 [perspective:1000px]">
+                // w-4/5 → 80% of parent width
+                // max-w-lg → optional maximum width
+                <div class={classes!(
+                    "relative",
+                    "w-full",
+                    "h-full",
+                    "transition-transform",
+                    "duration-700",
+                    "[transform-style:preserve-3d]",
+                    rotation
+                )}>
+                    // Front
+                    <div class="absolute inset-0 bg-pink-600 flex flex-col items-center justify-center [backface-visibility:hidden] rounded-lg shadow-lg">
+                        <h2 class="text-2xl text-white mb-2">{ "Models" }</h2>
+                        <div class="w-24 h-24 bg-white rounded-md shadow-inner flex items-center justify-center text-black">
+                            { "Model Box" }
                         </div>
-                        // Back
-                        <div class={classes!("absolute", "w-full", "h-full", "backface-hidden", "bg-green-500", "flex", "items-center", "justify-center", "text-white", "rounded", "rotate-y-180")}>
-                            { "Back" }
+                    </div>
+
+                    // Back
+                    <div class="absolute inset-0 bg-teal-500 flex flex-col items-center justify-center [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-lg shadow-lg">
+                        <h2 class="text-2xl text-white mb-2">{ "Agents" }</h2>
+                        <div class="w-24 h-24 bg-white rounded-md shadow-inner flex items-center justify-center text-black">
+                            { "Agent Box" }
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     }
 }

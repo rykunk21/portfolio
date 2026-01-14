@@ -7,9 +7,8 @@ pub fn hero() -> Html {
             <div style="background: linear-gradient(to bottom right, var(--icy-blue-50), white, white);" class="absolute inset-0 -z-10 h-[800px]"></div>
 
             <main class="max-w-7xl mx-auto px-6 pt-16 pb-24 lg:pt-24">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-                    <div class="max-w-2xl">
+                <div class="relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="relative z-10 max-w-2xl">
 
                         <h1 style="color: var(--icy-blue-500);" class="font-header font-bold text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 tracking-tight">
                             { "I design & build " }
@@ -39,15 +38,35 @@ pub fn hero() -> Html {
                             </a>
                         </div>
 
-                        <div class="space-y-3">
+                        <div class="
+                          space-y-3
+                          relative
+                          rounded-xl
+                          bg-white/70
+                          backdrop-blur-md
+                          p-4
+
+                          sm:bg-transparent
+                          sm:backdrop-blur-0
+                          sm:p-0
+                            ">
                             { check("Systems-first thinking") }
                             { check("Clear communication") }
                             { check("Long-term maintainability") }
                         </div>
                     </div>
 
-                         <div class="relative w-[500px] h-[600px] rounded-2xl overflow-hidden animate-float flex items-center justify-center">
-                         /* Background smear */
+
+                    <div class="
+                            relative mx-auto w-full max-w-[500px]
+                            h-[420px] sm:h-[300px] lg:h-[600px]
+                            rounded-2xl overflow-hidden animate-float
+                            flex items-center justify-center
+
+                            z-0
+                            -mt-32 sm:-mt-24 lg:mt-0
+                        ">
+                    /* Background smear */
                          <img
                              src="media/smear.png"
                              alt=""
