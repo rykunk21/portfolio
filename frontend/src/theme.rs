@@ -1,7 +1,11 @@
 use serde::Deserialize;
 use std::collections::HashMap;
-use wasm_bindgen::JsCast; // <-- for dyn_into
+use wasm_bindgen::JsCast;
 use web_sys::window;
+
+// ---------------------------------------------------------------------------
+// Palette types
+// ---------------------------------------------------------------------------
 
 #[derive(Deserialize, Debug)]
 pub struct Shades {
@@ -29,30 +33,82 @@ pub struct Shades {
     pub _950: String,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct Palette(pub HashMap<String, Shades>);
+impl Shades {
+    fn shade(&self, n: u32) -> &str {
+        match n {
+            50 => &self._50,
+            100 => &self._100,
+            200 => &self._200,
+            300 => &self._300,
+            400 => &self._400,
+            500 => &self._500,
+            600 => &self._600,
+            700 => &self._700,
+            800 => &self._800,
+            900 => &self._900,
+            950 => &self._950,
+            _ => &self._500,
+        }
+    }
+}
 
-/// Load the palette from colors.json at compile time and apply as CSS variables
+#[derive(Deserialize, Debug)]
+pub struct RawPalette(pub HashMap<String, Shades>);
+
+// ---------------------------------------------------------------------------
+// Semantic role mapping
+//
+// Maps your colors.json keys → semantic CSS var prefixes used in Tailwind.
+// Adjust here if you rename colors in colors.json.
+//
+//   primary   → page calls, links, button fills
+//   highlight → flame / popup accents
+//   accent    → warm sand & campfire glow
+//   neutral   → night sky text and backgrounds
+//   surface   → beach sand plates, cards, overlays
+// ---------------------------------------------------------------------------
+
+const ROLES: &[(&str, &str)] = &[
+    ("primary", "primary"),
+    ("highlight", "highlight"),
+    ("accent", "accent"),
+    ("neutral", "neutral"),
+    ("surface", "surface"),
+];
+
+const SHADES: &[u32] = &[50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+
+// ---------------------------------------------------------------------------
+// apply_palette — call once from App, writes all CSS vars to :root
+// ---------------------------------------------------------------------------
+
 pub fn apply_palette() {
     let palette_str = include_str!("../design/colors.json");
-    let palette: Palette = serde_json::from_str(palette_str).expect("Invalid colors.json");
+    let raw: RawPalette = serde_json::from_str(palette_str).expect("Invalid colors.json");
 
     let document = window().unwrap().document().unwrap();
     let root = document
         .document_element()
         .unwrap()
-        .dyn_into::<web_sys::HtmlElement>() // <-- cast to HtmlElement
+        .dyn_into::<web_sys::HtmlElement>()
         .unwrap();
 
-    for (name, shades) in palette.0.iter() {
-        root.style()
-            .set_property(&format!("--{}-50", name), &shades._50)
-            .unwrap();
-        root.style()
-            .set_property(&format!("--{}-500", name), &shades._500)
-            .unwrap();
-        root.style()
-            .set_property(&format!("--{}-900", name), &shades._900)
-            .unwrap();
+    for &(key, role) in ROLES {
+        match raw.0.get(key) {
+            Some(shades) => {
+                for &n in SHADES {
+                    root.style()
+                        .set_property(&format!("--color-{}-{}", role, n), shades.shade(n))
+                        .unwrap_or_else(|_| {
+                            web_sys::console::warn_1(
+                                &format!("Failed to set --color-{}-{}", role, n).into(),
+                            );
+                        });
+                }
+            }
+            None => {
+                web_sys::console::warn_1(&format!("colors.json missing key '{}'", key).into());
+            }
+        }
     }
 }

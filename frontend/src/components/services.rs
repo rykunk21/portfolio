@@ -16,7 +16,7 @@ pub fn services() -> Html {
     let rotation = format!("[transform:rotateY({}deg)]", *flip * 180.0);
 
     html! {
-        <div class="flex flex-col items-center gap-8 mt-10 mx-4"> // mx-4 adds horizontal margin
+        <div class="flex flex-col items-center gap-8 mt-10 mx-4" style="background-color: var(--color-neutral-950);">
             // Slider
             <input
                 type="range"
@@ -43,17 +43,17 @@ pub fn services() -> Html {
                     rotation
                 )}>
                     // Front
-                    <div class="absolute inset-0 bg-pink-600 flex flex-col items-center justify-center [backface-visibility:hidden] rounded-lg shadow-lg">
-                        <h2 class="text-2xl text-white mb-2">{ "Models" }</h2>
-                        <div class="w-24 h-24 bg-white rounded-md shadow-inner flex items-center justify-center text-black">
+                    <div style="background-color: var(--color-highlight-500);" class="absolute inset-0 flex flex-col items-center justify-center [backface-visibility:hidden] rounded-lg shadow-lg">
+                        <h2 class="text-2xl mb-2" style="color: var(--color-neutral-950);">{ "Models" }</h2>
+                        <div class="w-24 h-24 rounded-md shadow-inner flex items-center justify-center" style="background-color: var(--color-surface-50); color: var(--color-neutral-950);">
                             { "Model Box" }
                         </div>
                     </div>
 
                     // Back
-                    <div class="absolute inset-0 bg-teal-500 flex flex-col items-center justify-center [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-lg shadow-lg">
-                        <h2 class="text-2xl text-white mb-2">{ "Agents" }</h2>
-                        <div class="w-24 h-24 bg-white rounded-md shadow-inner flex items-center justify-center text-black">
+                    <div style="background-color: var(--color-primary-500);" class="absolute inset-0 flex flex-col items-center justify-center [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-lg shadow-lg">
+                        <h2 class="text-2xl mb-2" style="color: var(--color-neutral-950);">{ "Agents" }</h2>
+                        <div class="w-24 h-24 rounded-md shadow-inner flex items-center justify-center" style="background-color: var(--color-surface-50); color: var(--color-neutral-950);">
                             { "Agent Box" }
                         </div>
                     </div>

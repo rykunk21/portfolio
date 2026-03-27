@@ -61,19 +61,20 @@ pub fn process(props: &ProcessProps) -> Html {
     };
 
     html! {
-    <section class="py-8 px-4 sm:px-6 lg:px-8 bg-gray-50">
-                <div class="max-w-6xl mx-auto">
-                    <h2 class="text-2xl font-bold text-gray-900 text-center mb-8 md:text-3xl">
-                        { section_title }
-                    </h2>
+        <section class="py-8 px-4 sm:px-6 lg:px-8" style="background-color: var(--color-neutral-950);">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl font-bold text-center mb-8 md:text-3xl" style="color: var(--color-surface-50);">
+                    { section_title }
+                </h2>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        { for steps.iter().map(|step| html! {
-                            <ProcessCard step={step.clone()} />
-                        }) }
-                    </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    { for steps.iter().map(|step| html! {
+                        <ProcessCard step={step.clone()} />
+                    }) }
                 </div>
-            </section>    }
+            </div>
+        </section>
+    }
 }
 
 #[derive(Properties, PartialEq)]
@@ -86,7 +87,7 @@ fn process_card(props: &ProcessCardProps) -> Html {
     let step = &props.step;
 
     html! {
-        <a href="#" class="group relative block bg-black h-64 sm:h-80 lg:h-96 rounded overflow-hidden">
+        <a href="#" class="group relative block h-64 sm:h-80 lg:h-96 rounded overflow-hidden" style="background-color: var(--color-neutral-900);">
             <img
                 alt={format!("Step {}: {}", step.number, step.title)}
                 src={step.image_url.clone()}
@@ -96,10 +97,10 @@ fn process_card(props: &ProcessCardProps) -> Html {
             <div class="relative p-4 sm:p-6 lg:p-8 h-full flex flex-col">
                 // Number and Title (always visible)
                 <div>
-                    <p class="text-sm font-medium tracking-widest text-pink-500 uppercase">
+                    <p class="text-sm font-medium tracking-widest uppercase" style="color: var(--color-highlight-500);">
                         { format!("Step {}", step.number) }
                     </p>
-                    <p class="text-xl font-bold text-white sm:text-2xl mt-2">
+                    <p class="text-xl font-bold sm:text-2xl mt-2" style="color: var(--color-surface-50);">
                         { &step.title }
                     </p>
                 </div>
@@ -107,7 +108,7 @@ fn process_card(props: &ProcessCardProps) -> Html {
                 // Description (revealed on hover)
                 <div class="mt-auto">
                     <div class="translate-y-8 transform opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
-                        <p class="text-sm text-white">
+                        <p class="text-sm" style="color: var(--color-surface-200);">
                             { &step.description }
                         </p>
                     </div>

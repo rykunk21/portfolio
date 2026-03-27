@@ -56,14 +56,14 @@ pub fn audience(props: &AudienceProps) -> Html {
 
     html! {
 
-    <section style="background-color: #a8d8ff;">
+    <section style="background-color: var(--color-neutral-900);">
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             /* Section Header */
             <div class="mx-auto max-w-lg text-center">
-                <h2 class="text-2xl font-bold text-gray-900 sm:text-3xl">
+                <h2 class="text-2xl font-bold sm:text-3xl" style="color: var(--color-surface-50);">
                     { section_title }
                 </h2>
-                <p class="mt-4 text-pretty text-gray-700">
+                <p class="mt-4 text-pretty" style="color: var(--color-surface-400);">
                     { section_description }
                 </p>
             </div>
@@ -89,23 +89,35 @@ fn audience_card(props: &AudienceCardProps) -> Html {
     let audience_type = &props.audience_type;
 
     html! {
-        <div class="group relative grid place-content-center p-6 sm:p-8 bg-gray-50 rounded-lg hover:bg-[#a8d8ff] hover:shadow-lg transition-all duration-300">
+        <div class="group relative grid place-content-center p-6 sm:p-8 rounded-lg hover:shadow-lg transition-all duration-300"
+             style="background-color: var(--color-neutral-800);"
+             onmouseenter={Callback::from(|e: MouseEvent| {
+                 if let Some(el) = e.target_dyn_into::<web_sys::HtmlElement>() {
+                     let _ = el.style().set_property("background-color", "var(--color-neutral-700)");
+                 }
+             })}
+             onmouseleave={Callback::from(|e: MouseEvent| {
+                 if let Some(el) = e.target_dyn_into::<web_sys::HtmlElement>() {
+                     let _ = el.style().set_property("background-color", "var(--color-neutral-800)");
+                 }
+             })}
+        >
             <div class="text-center">
                 /* Number Badge */
                 <div
-                    class="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full text-white font-bold text-xl group-hover:scale-110 transition-transform"
-                    style="background-color: #3ba2f6;"
+                    class="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full font-bold text-xl group-hover:scale-110 transition-transform"
+                    style="background-color: var(--color-highlight-500); color: var(--color-neutral-950);"
                 >
                     { &audience_type.number }
                 </div>
 
                 /* Title */
-                <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#3ba2f6] transition-colors">
+                <h3 class="text-lg font-bold mb-2 transition-colors" style="color: var(--color-surface-50);">
                     { &audience_type.title }
                 </h3>
 
                 /* Description */
-                <p class="text-sm text-gray-600">
+                <p class="text-sm" style="color: var(--color-surface-400);">
                     { &audience_type.description }
                 </p>
             </div>

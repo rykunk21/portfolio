@@ -1,3 +1,5 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Color CSS vars are set by runtime from frontend/design/colors.json via theme::apply_palette(). */
