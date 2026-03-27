@@ -27,8 +27,8 @@ async fn main() -> Result<(), rocket::Error> {
         address: IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)),
         ..Config::default()
     })
-    .mount("/", FileServer::from("./frontend/dist"))
     .mount("/axiom", FileServer::from("./backend/static/axiom"))
+    .mount("/", FileServer::from("./frontend/dist"))
     // Skip API routes
     // .mount("/api", routes![routes::create, routes::read, routes::update, routes::delete])
     .launch()
