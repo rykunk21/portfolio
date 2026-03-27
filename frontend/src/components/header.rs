@@ -60,7 +60,7 @@ pub fn header(props: &HeaderProps) -> Html {
     };
 
     html! {
-        <header style="background-color: var(--graphite-900);"
+        <header style="background-color: var(--graphite-900);">
             <div class="mx-auto flex h-16 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
                 // Logo Image
                     <a class="block" href={logo_href}>

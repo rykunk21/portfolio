@@ -13,47 +13,47 @@ pub fn about() -> Html {
                 />
             </div>
 
-                // Right Side: Text Content
-                <div class="w-full md:w-7/12 text-center md:text-left relative"
-                    // Vertical Text
-                    <div class="absolute left-[40%] -top-6 md:-left-16 lg:top-0 md:top-6 rotate-0 md:rotate-[-90deg] text-sm tracking-widest" style="color: var(--pale-slate-400);"
-                        <div class="flex items-center justify-center gap-2"
-                            <div class="w-16 h-[2px]" style="background-color: var(--pale-slate-500);"
-                            <p>{ "MORE ABOUT" }</p>
-                        </div>
+            // Right Side: Text Content
+            <div class="w-full md:w-7/12 text-center md:text-left relative"
+                // Vertical Text
+                <div class="absolute left-[40%] -top-6 md:-left-16 lg:top-0 md:top-6 rotate-0 md:rotate-[-90deg] text-sm tracking-widest" style="color: var(--pale-slate-400);"
+                    <div class="flex items-center justify-center gap-2"
+                        <div class="w-16 h-[2px]" style="background-color: var(--pale-slate-500);"></div>
+                        <p>{ "MORE ABOUT" }</p>
                     </div>
-
-                        // Main Heading
-                        <h2 class="text-3xl md:text-5xl font-bold leading-tight mb-4 pl-10" style="color: var(--pale-slate-50);"
-                            { "A Passionate " }
-                            <br />
-                            { "Software Developer" }
-                        </h2>
-
-                        // Description
-                        <p class="mb-6 text-sm md:text-base leading-relaxed max-w-2xl mx-auto md:mx-0" style="color: var(--pale-slate-400);"
-                            { "I'm Ryan Kunkel, a software developer who enjoys building thoughtful, reliable applications. I like working with Rust, Linux, and Docker, and I focus on creating user-friendly tools that solve real problems in a maintainable way." }
-                        </p>
-
-                        // Buttons
-                        <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
-                            <a
-                                href="#projects"
-                                class="font-semibold py-2 px-4 rounded-lg text-center hover:opacity-90"
-                                style="background-color: var(--carrot-orange-500); color: var(--graphite-950);"
-                            >
-                                { "See Projects" }
-                            </a>
-
-                            <a
-                                href="#details"
-                                class="border font-semibold py-2 px-4 rounded-lg hover:opacity-90 text-center"
-                                style="border-color: var(--carrot-orange-500); color: var(--carrot-orange-500);"
-                            >
-                                { "More Details" }
-                            </a>
-                        </div>
                 </div>
+
+                // Main Heading
+                <h2 class="text-3xl md:text-5xl font-bold leading-tight mb-4 pl-10" style="color: var(--pale-slate-50);"
+                    { "A Passionate " }
+                    <br />
+                    { "Software Developer" }
+                </h2>
+
+                // Description
+                <p class="mb-6 text-sm md:text-base leading-relaxed max-w-2xl mx-auto md:mx-0" style="color: var(--pale-slate-400);"
+                    { "I'm Ryan Kunkel, a software developer who enjoys building thoughtful, reliable applications. I like working with Rust, Linux, and Docker, and I focus on creating user-friendly tools that solve real problems in a maintainable way." }
+                </p>
+
+                // Buttons
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
+                    <a
+                        href="#projects"
+                        class="font-semibold py-2 px-4 rounded-lg text-center hover:opacity-90"
+                        style="background-color: var(--carrot-orange-500); color: var(--graphite-950);"
+                    >
+                        { "See Projects" }
+                    </a>
+
+                    <a
+                        href="#details"
+                        class="border font-semibold py-2 px-4 rounded-lg hover:opacity-90 text-center"
+                        style="border-color: var(--carrot-orange-500); color: var(--carrot-orange-500);"
+                    >
+                        { "More Details" }
+                    </a>
+                </div>
+            </div>
         </section>
     }
 }

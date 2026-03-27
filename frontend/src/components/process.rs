@@ -61,19 +61,20 @@ pub fn process(props: &ProcessProps) -> Html {
     };
 
     html! {
-    <section class="py-8 px-4 sm:px-6 lg:px-8" style="background-color: var(--graphite-950);"
-                <div class="max-w-6xl mx-auto"
-                    <h2 class="text-2xl font-bold text-center mb-8 md:text-3xl" style="color: var(--pale-slate-50);"
-                        { section_title }
-                    </h2>
+        <section class="py-8 px-4 sm:px-6 lg:px-8" style="background-color: var(--graphite-950);"
+            <div class="max-w-6xl mx-auto"
+                <h2 class="text-2xl font-bold text-center mb-8 md:text-3xl" style="color: var(--pale-slate-50);"
+                    { section_title }
+                </h2>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                        { for steps.iter().map(|step| html! {
-                            <ProcessCard step={step.clone()} />
-                        }) }
-                    </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                    { for steps.iter().map(|step| html! {
+                        <ProcessCard step={step.clone()} />
+                    }) }
                 </div>
-            </section>    }
+            </div>
+        </section>
+    }
 }
 
 #[derive(Properties, PartialEq)]
