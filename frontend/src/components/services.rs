@@ -43,17 +43,17 @@ pub fn services() -> Html {
                     rotation
                 )}>
                     // Front
-                    <div class="absolute inset-0 bg-pink-600 flex flex-col items-center justify-center [backface-visibility:hidden] rounded-lg shadow-lg">
-                        <h2 class="text-2xl text-white mb-2">{ "Models" }</h2>
-                        <div class="w-24 h-24 bg-white rounded-md shadow-inner flex items-center justify-center text-black">
+                    <div style="background-color: var(--carrot-orange-500);" class="absolute inset-0 flex flex-col items-center justify-center [backface-visibility:hidden] rounded-lg shadow-lg">
+                        <h2 class="text-2xl mb-2" style="color: var(--graphite-950);">{ "Models" }</h2>
+                        <div class="w-24 h-24 rounded-md shadow-inner flex items-center justify-center" style="background-color: var(--pale-slate-50); color: var(--graphite-950);">
                             { "Model Box" }
                         </div>
                     </div>
 
                     // Back
-                    <div class="absolute inset-0 bg-teal-500 flex flex-col items-center justify-center [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-lg shadow-lg">
-                        <h2 class="text-2xl text-white mb-2">{ "Agents" }</h2>
-                        <div class="w-24 h-24 bg-white rounded-md shadow-inner flex items-center justify-center text-black">
+                    <div style="background-color: var(--blue-bell-500);" class="absolute inset-0 flex flex-col items-center justify-center [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-lg shadow-lg">
+                        <h2 class="text-2xl mb-2" style="color: var(--graphite-950);">{ "Agents" }</h2>
+                        <div class="w-24 h-24 rounded-md shadow-inner flex items-center justify-center" style="background-color: var(--pale-slate-50); color: var(--graphite-950);">
                             { "Agent Box" }
                         </div>
                     </div>
