@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axiom Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eaeaea;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            background: linear-gradient(90deg, #00d4aa, #00a8e8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: #888;
+            margin-top: 0.5rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #00d4aa;
+        }
+        .card h3 {
+            color: #00d4aa;
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+        .card p {
+            color: #aaa;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .card a {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #00a8e8;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .card a:hover {
+            text-decoration: underline;
+        }
+        .status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .status.active { background: #00d4aa; }
+        .status.inactive { background: #ff6b6b; }
+        .footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #333;
+            color: #666;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Axiom Dashboard</h1>
+            <p class="subtitle">Project overview and quick links</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h3><span class="status active"></span>app_basic</h3>
+                <p>Core application foundation with basic structures and utilities.</p>
+                <a href="https://github.com/rykunk21/app_basic" target="_blank">View on GitHub →</a>
+            </div>
+
+            <div class="card">
+                <h3><span class="status active"></span>portfolio</h3>
+                <p>Personal portfolio site showcasing projects and experience.</p>
+                <a href="https://github.com/rykunk21/portfolio" target="_blank">View on GitHub →</a>
+            </div>
+
+            <div class="card">
+                <h3><span class="status inactive"></span>ncaab-predictor</h3>
+                <p>NCAA basketball prediction and analysis tools.</p>
+                <a href="https://github.com/rykunk21/ncaab-predictor" target="_blank">View on GitHub →</a>
+            </div>
+
+            <div class="card">
+                <h3><span class="status active"></span>.dotfiles</h3>
+                <p>System configuration and dotfiles for Arch Linux setups.</p>
+                <a href="https://github.com/rykunk21/.dotfiles" target="_blank">View on GitHub →</a>
+            </div>
+
+            <div class="card">
+                <h3><span class="status inactive"></span>agent.nvim</h3>
+                <p>Neovim plugin for AI-assisted development.</p>
+                <a href="https://github.com/rykunk21/agent.nvim" target="_blank">View on GitHub →</a>
+            </div>
+
+            <div class="card">
+                <h3><span class="status inactive"></span>quizzer</h3>
+                <p>Interactive quiz application.</p>
+                <a href="https://github.com/rykunk21/quizzer" target="_blank">View on GitHub →</a>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Built with Rust + Rocket · Last updated: <span id="date"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('date').textContent = new Date().toLocaleDateString();
+    </script>
+</body>
+</html>
