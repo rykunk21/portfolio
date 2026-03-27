@@ -60,7 +60,7 @@ pub fn header(props: &HeaderProps) -> Html {
     };
 
     html! {
-        <header style="background-color: var(--graphite-900);">
+        <header style="background-color: var(--color-neutral-900);">
             <div class="mx-auto flex h-16 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
                 // Logo Image
                     <a class="block" href={logo_href}>
@@ -80,7 +80,7 @@ pub fn header(props: &HeaderProps) -> Html {
                                         <li>
                                             <a
                                                 class="transition hover:opacity-75 py-2"
-                                                style="color: var(--pale-slate-400);"
+                                                style="color: var(--color-surface-400);"
                                                 href={item.href.clone()}
                                             >
                                                 { &item.label }
@@ -97,7 +97,7 @@ pub fn header(props: &HeaderProps) -> Html {
                                 <div class="sm:flex sm:gap-4">
                                     <a
                                         class="block rounded-md px-5 py-2.5 text-sm font-medium transition hover:opacity-90"
-                                        style="background-color: var(--carrot-orange-500); color: var(--graphite-950);"
+                                        style="background-color: var(--color-highlight-500); color: var(--color-neutral-950);"
                                         href="#"
                                     >
                                         {"Login"}
@@ -105,7 +105,7 @@ pub fn header(props: &HeaderProps) -> Html {
 
                                     <a
                                         class="hidden rounded-md px-5 py-2.5 text-sm font-medium transition hover:opacity-90 sm:block"
-                                        style="background-color: var(--graphite-800); color: var(--pale-slate-50);"
+                                        style="background-color: var(--color-neutral-800); color: var(--color-surface-50);"
                                         href="#"
                                     >
                                         {"Register"}
@@ -116,7 +116,7 @@ pub fn header(props: &HeaderProps) -> Html {
                             // Mobile Menu Toggle
                             <button
                                 class="block rounded-sm p-2.5 transition hover:opacity-75 md:hidden"
-                                style="background-color: var(--graphite-800); color: var(--pale-slate-400);"
+                                style="background-color: var(--color-neutral-800); color: var(--color-surface-400);"
                                 onclick={toggle_menu}
                             >
                                 <span class="sr-only">{"Toggle menu"}</span>
@@ -141,7 +141,7 @@ pub fn header(props: &HeaderProps) -> Html {
 
             // Mobile Menu (conditional)
             if *menu_open {
-                <div class="md:hidden" style="border-top: 1px solid var(--graphite-800); background-color: var(--graphite-900);">
+                <div class="md:hidden" style="border-top: 1px solid var(--color-neutral-800); background-color: var(--color-neutral-900);">
                     <nav class="px-4 py-4">
                         <ul class="space-y-2">
                             { for nav_items.iter().map(|item| {
@@ -149,7 +149,7 @@ pub fn header(props: &HeaderProps) -> Html {
                                     <li>
                                         <a
                                             class="block transition hover:opacity-75 py-2"
-                                            style="color: var(--pale-slate-400);"
+                                            style="color: var(--color-surface-400);"
                                             href={item.href.clone()}
                                         >
                                             { &item.label }

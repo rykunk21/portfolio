@@ -4,16 +4,16 @@ use yew::prelude::*;
 pub fn contact() -> Html {
     html! {
     <section
-        class="text-pale-slate-400 body-font relative"
-        style="background-color: var(--graphite-950);"
+        class="text-surface-400 body-font relative"
+        style="background-color: var(--color-neutral-950);"
     >
             <div class="container px-5 py-12 mx-auto">
                 // Header
                 <div class="flex flex-col text-center w-full mb-12">
-                    <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4" style="color: var(--pale-slate-50);">
+                    <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4" style="color: var(--color-surface-50);">
                         { "Contact Me" }
                     </h1>
-                    <p class="lg:w-2/3 mx-auto leading-relaxed text-base" style="color: var(--pale-slate-400);">
+                    <p class="lg:w-2/3 mx-auto leading-relaxed text-base" style="color: var(--color-surface-400);">
                         { "Please get in touch" }
                     </p>
                 </div>
@@ -25,15 +25,15 @@ pub fn contact() -> Html {
                             // Name
                             <div class="p-2 w-1/2">
                                 <div class="relative">
-                                    <label for="name" class="leading-7 text-sm" style="color: var(--pale-slate-400);">
+                                    <label for="name" class="leading-7 text-sm" style="color: var(--color-surface-400);">
                                         { "Name" }
                                     </label>
                                     <input
                                         type="text"
                                         id="name"
                                         name="name"
-                                        style="background-color: var(--graphite-900); border-color: var(--graphite-700); color: var(--pale-slate-50);"
-                                        class="w-full rounded border focus:border-carrot-orange-500 focus:ring-1 focus:ring-carrot-orange-500 text-base outline-none py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                        style="background-color: var(--color-neutral-900); border-color: var(--color-neutral-700); color: var(--color-surface-50);"
+                                        class="w-full rounded border focus:border-highlight-500 focus:ring-1 focus:ring-highlight-500 text-base outline-none py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                                     />
                                 </div>
                             </div>
@@ -41,15 +41,15 @@ pub fn contact() -> Html {
                             // Email
                             <div class="p-2 w-1/2">
                                 <div class="relative">
-                                    <label for="email" class="leading-7 text-sm" style="color: var(--pale-slate-400);">
+                                    <label for="email" class="leading-7 text-sm" style="color: var(--color-surface-400);">
                                         { "Email" }
                                     </label>
                                     <input
                                         type="email"
                                         id="email"
                                         name="email"
-                                        style="background-color: var(--graphite-900); border-color: var(--graphite-700); color: var(--pale-slate-50);"
-                                        class="w-full rounded border focus:border-carrot-orange-500 focus:ring-1 focus:ring-carrot-orange-500 text-base outline-none py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                        style="background-color: var(--color-neutral-900); border-color: var(--color-neutral-700); color: var(--color-surface-50);"
+                                        class="w-full rounded border focus:border-highlight-500 focus:ring-1 focus:ring-highlight-500 text-base outline-none py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                                     />
                                 </div>
                             </div>
@@ -57,14 +57,14 @@ pub fn contact() -> Html {
                             // Message
                             <div class="p-2 w-full">
                                 <div class="relative">
-                                    <label for="message" class="leading-7 text-sm" style="color: var(--pale-slate-400);">
+                                    <label for="message" class="leading-7 text-sm" style="color: var(--color-surface-400);">
                                         { "Message" }
                                     </label>
                                     <textarea
                                         id="message"
                                         name="message"
-                                        style="background-color: var(--graphite-900); border-color: var(--graphite-700); color: var(--pale-slate-50);"
-                                        class="w-full rounded border focus:border-carrot-orange-500 focus:ring-1 focus:ring-carrot-orange-500 h-32 text-base outline-none py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
+                                        style="background-color: var(--color-neutral-900); border-color: var(--color-neutral-700); color: var(--color-surface-50);"
+                                        class="w-full rounded border focus:border-highlight-500 focus:ring-1 focus:ring-highlight-500 h-32 text-base outline-none py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
                                     />
                                 </div>
                             </div>
@@ -73,7 +73,7 @@ pub fn contact() -> Html {
                             <div class="p-2 w-full">
                                 <button
                                     type="submit"
-                                    style="background-color: var(--carrot-orange-500); color: var(--graphite-950);"
+                                    style="background-color: var(--color-highlight-500); color: var(--color-neutral-950);"
                                     class="flex mx-auto border-0 py-2 px-8 focus:outline-none hover:opacity-90 rounded text-lg"
                                 >
                                     { "Send" }
@@ -81,7 +81,7 @@ pub fn contact() -> Html {
                             </div>
 
                             // Footer / Contact Info
-                            <div class="p-2 w-full pt-8 mt-8 border-t text-center" style="border-color: var(--graphite-800);">
+                            <div class="p-2 w-full pt-8 mt-8 border-t text-center" style="border-color: var(--color-neutral-800);">
 
                                 <p class="leading-normal my-5">
                                     { "" }
@@ -91,7 +91,7 @@ pub fn contact() -> Html {
 
                                 // Social Icons
                                 <span class="inline-flex">
-                                    <a class="" style="color: var(--pale-slate-500);">
+                                    <a class="" style="color: var(--color-surface-500);">
                                         <svg
                                             fill="currentColor"
                                             stroke-linecap="round"
@@ -104,7 +104,7 @@ pub fn contact() -> Html {
                                         </svg>
                                     </a>
 
-                                    <a class="ml-4" style="color: var(--pale-slate-500);">
+                                    <a class="ml-4" style="color: var(--color-surface-500);">
                                         <svg
                                             fill="currentColor"
                                             stroke-linecap="round"
@@ -117,7 +117,7 @@ pub fn contact() -> Html {
                                         </svg>
                                     </a>
 
-                                    <a class="ml-4" style="color: var(--pale-slate-500);">
+                                    <a class="ml-4" style="color: var(--color-surface-500);">
                                         <svg
                                             fill="none"
                                             stroke="currentColor"
@@ -132,7 +132,7 @@ pub fn contact() -> Html {
                                         </svg>
                                     </a>
 
-                                    <a class="ml-4" style="color: var(--pale-slate-500);">
+                                    <a class="ml-4" style="color: var(--color-surface-500);">
                                         <svg
                                             fill="currentColor"
                                             stroke-linecap="round"

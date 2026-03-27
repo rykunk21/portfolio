@@ -56,14 +56,14 @@ pub fn audience(props: &AudienceProps) -> Html {
 
     html! {
 
-    <section style="background-color: var(--graphite-900);">
+    <section style="background-color: var(--color-neutral-900);">
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             /* Section Header */
             <div class="mx-auto max-w-lg text-center">
-                <h2 class="text-2xl font-bold sm:text-3xl" style="color: var(--pale-slate-50);">
+                <h2 class="text-2xl font-bold sm:text-3xl" style="color: var(--color-surface-50);">
                     { section_title }
                 </h2>
-                <p class="mt-4 text-pretty" style="color: var(--pale-slate-400);">
+                <p class="mt-4 text-pretty" style="color: var(--color-surface-400);">
                     { section_description }
                 </p>
             </div>
@@ -90,15 +90,15 @@ fn audience_card(props: &AudienceCardProps) -> Html {
 
     html! {
         <div class="group relative grid place-content-center p-6 sm:p-8 rounded-lg hover:shadow-lg transition-all duration-300"
-             style="background-color: var(--graphite-800);"
+             style="background-color: var(--color-neutral-800);"
              onmouseenter={Callback::from(|e: MouseEvent| {
                  if let Some(el) = e.target_dyn_into::<web_sys::HtmlElement>() {
-                     let _ = el.style().set_property("background-color", "var(--graphite-700)");
+                     let _ = el.style().set_property("background-color", "var(--color-neutral-700)");
                  }
              })}
              onmouseleave={Callback::from(|e: MouseEvent| {
                  if let Some(el) = e.target_dyn_into::<web_sys::HtmlElement>() {
-                     let _ = el.style().set_property("background-color", "var(--graphite-800)");
+                     let _ = el.style().set_property("background-color", "var(--color-neutral-800)");
                  }
              })}
         >
@@ -106,18 +106,18 @@ fn audience_card(props: &AudienceCardProps) -> Html {
                 /* Number Badge */
                 <div
                     class="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full font-bold text-xl group-hover:scale-110 transition-transform"
-                    style="background-color: var(--carrot-orange-500); color: var(--graphite-950);"
+                    style="background-color: var(--color-highlight-500); color: var(--color-neutral-950);"
                 >
                     { &audience_type.number }
                 </div>
 
                 /* Title */
-                <h3 class="text-lg font-bold mb-2 transition-colors" style="color: var(--pale-slate-50);">
+                <h3 class="text-lg font-bold mb-2 transition-colors" style="color: var(--color-surface-50);">
                     { &audience_type.title }
                 </h3>
 
                 /* Description */
-                <p class="text-sm" style="color: var(--pale-slate-400);">
+                <p class="text-sm" style="color: var(--color-surface-400);">
                     { &audience_type.description }
                 </p>
             </div>
