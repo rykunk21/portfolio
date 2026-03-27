@@ -1,0 +1,84 @@
+# .github/workflows/tdd-board-sync.yml
+# Watches for label changes on issues and updates the ProjectV2 Status column.
+# Requires a PAT with project scope stored as a repo secret: PROJECT_PAT
+
+name: Sync TDD label to project board
+
+on:
+  issues:
+    types: [labeled, unlabeled, opened, closed]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set project status from label
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_PAT }}
+          PROJECT_NUMBER: 15
+          GH_USER: rykunk21
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          LABELS=$(gh issue view $ISSUE_NUMBER --repo ${{ github.repository }} --json labels -q '.labels[].name')
+
+          if echo "$LABELS" | grep -q "refactor"; then
+            STATUS="Refactor"
+          elif echo "$LABELS" | grep -q "green"; then
+            STATUS="Green"
+          elif echo "$LABELS" | grep -q "red"; then
+            STATUS="Red"
+          elif [ "${{ github.event.issue.state }}" = "closed" ]; then
+            STATUS="Done"
+          else
+            STATUS="Backlog"
+          fi
+
+          echo "Setting issue #$ISSUE_NUMBER to status: $STATUS"
+
+          PROJECT_DATA=$(gh api graphql -f query="
+          {
+            user(login: \\"$GH_USER\\") {
+              projectV2(number: $PROJECT_NUMBER) {
+                id
+                fields(first: 20) {
+                  nodes {
+                    ... on ProjectV2SingleSelectField {
+                      id
+                      name
+                      options { id name }
+                    }
+                  }
+                }
+              }
+            }
+          }")
+
+          PROJECT_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.id')
+          FIELD_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .id')
+          OPTION_ID=$(echo "$PROJECT_DATA" | jq -r ".data.user.projectV2.fields.nodes[] | select(.name == \"Status\") | .options[] | select(.name == \"$STATUS\") | .id")
+
+          ITEM_ID=$(gh api graphql -f query="
+          {
+            repository(owner: \\"$GH_USER\\", name: \\"${{ github.event.repository.name }}\\") {
+              issue(number: $ISSUE_NUMBER) {
+                projectItems(first: 10) {
+                  nodes {
+                    id
+                    project { id }
+                  }
+                }
+              }
+            }
+          }" | jq -r ".data.repository.issue.projectItems.nodes[] | select(.project.id == \"$PROJECT_ID\") | .id")
+
+          gh api graphql -f query="
+          mutation {
+            updateProjectV2ItemFieldValue(input: {
+              projectId: \\"$PROJECT_ID\\"
+              itemId: \\"$ITEM_ID\\"
+              fieldId: \\"$FIELD_ID\\"
+              value: { singleSelectOptionId: \\"$OPTION_ID\\" }
+            }) {
+              projectV2Item { id }
+            }
+          }"
