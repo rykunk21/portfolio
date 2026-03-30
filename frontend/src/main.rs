@@ -4,7 +4,7 @@ mod components;
 mod theme;
 
 use components::{
-    about::About, audience::Audience, contact::Contact, header::Header, hero::Hero,
+    about::About, audience::Audience, background::ImmersiveBackground, contact::Contact, header::Header, hero::Hero,
     process::Process, services::Services,
 };
 
@@ -14,6 +14,7 @@ fn app() -> Html {
 
     html! {
         <>
+            <ImmersiveBackground />
             <Header />
             <Hero />
             <Services />
