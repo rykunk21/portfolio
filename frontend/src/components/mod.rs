@@ -10,5 +10,6 @@ pub mod header;
 pub mod hero;
 pub mod portfolio;
 pub mod process;
+pub mod scroll_snap;
 
 pub mod services;
