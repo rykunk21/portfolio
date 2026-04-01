@@ -3,3 +3,16 @@
 @tailwind utilities;
 
 /* Color CSS vars are set by runtime from frontend/design/colors.json via theme::apply_palette(). */
+
+/* Prevent iOS Safari zoom on double-tap */
+button, [onclick], .touch-target {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Also prevent text selection which can trigger zoom */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
