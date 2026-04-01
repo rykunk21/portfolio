@@ -15,14 +15,42 @@ pub fn services() -> Html {
     let model_index = use_state(|| 0);
     let agent_index = use_state(|| 0);
 
-    let on_flip_input = {
+    let on_flip_click = {
         let flip = flip.clone();
         let showing_models = showing_models.clone();
-        Callback::from(move |event: InputEvent| {
-            if let Some(input) = event.target_dyn_into::<web_sys::HtmlInputElement>() {
-                let value = input.value_as_number();
-                flip.set(value);
-                showing_models.set(value < 0.5);
+        Callback::from(move |_| {
+            let new_showing = !*showing_models;
+            flip.set(if new_showing { 0.0 } else { 1.0 });
+            showing_models.set(new_showing);
+        })
+    };
+
+    let on_prev = {
+        let showing_models = showing_models.clone();
+        let model_idx = model_index.clone();
+        let agent_idx = agent_index.clone();
+        Callback::from(move |_| {
+            if *showing_models {
+                let count = 4;
+                model_idx.set((*model_idx + count - 1) % count);
+            } else {
+                let count = 4;
+                agent_idx.set((*agent_idx + count - 1) % count);
+            }
+        })
+    };
+
+    let on_next = {
+        let showing_models = showing_models.clone();
+        let model_idx = model_index.clone();
+        let agent_idx = agent_index.clone();
+        Callback::from(move |_| {
+            if *showing_models {
+                let count = 4;
+                model_idx.set((*model_idx + 1) % count);
+            } else {
+                let count = 4;
+                agent_idx.set((*agent_idx + 1) % count);
             }
         })
     };
@@ -83,161 +111,153 @@ pub fn services() -> Html {
         },
     ];
 
-    let models_count = models_projects.len();
-    let agents_count = agents_projects.len();
-
-    let prev_project = {
-        let showing_models = showing_models.clone();
-        let model_index = model_index.clone();
-        let agent_index = agent_index.clone();
-        Callback::from(move |_| {
-            if *showing_models {
-                model_index.set((*model_index + models_count - 1) % models_count);
-            } else {
-                agent_index.set((*agent_index + agents_count - 1) % agents_count);
-            }
-        })
-    };
-
-    let next_project = {
-        let showing_models = showing_models.clone();
-        let model_index = model_index.clone();
-        let agent_index = agent_index.clone();
-        Callback::from(move |_| {
-            if *showing_models {
-                model_index.set((*model_index + 1) % models_count);
-            } else {
-                agent_index.set((*agent_index + 1) % agents_count);
-            }
-        })
-    };
-
-    let (current_title, current_desc, current_icon, current_details) = if *showing_models {
-        let p = &models_projects[*model_index % models_count];
-        (p.title, p.description, p.icon, p.details)
+    let (current_title, current_desc, current_icon, current_details, current_index, total_count) = if *showing_models {
+        let p = &models_projects[*model_index % models_projects.len()];
+        (p.title, p.description, p.icon, p.details, *model_index, models_projects.len())
     } else {
-        let p = &agents_projects[*agent_index % agents_count];
-        (p.title, p.description, p.icon, p.details)
+        let p = &agents_projects[*agent_index % agents_projects.len()];
+        (p.title, p.description, p.icon, p.details, *agent_index, agents_projects.len())
     };
 
-    let current_index = if *showing_models { *model_index } else { *agent_index };
-    let total_count = if *showing_models { models_count } else { agents_count };
-
-    let card_bg = if *showing_models { "var(--color-highlight-500)" } else { "var(--color-primary-500)" };
-    let card_text = "var(--color-neutral-950)";
+    let rotation = *flip * 180.0;
 
     html! {
-        <div class="flex flex-col items-center justify-center min-h-screen" style="background-color: var(--color-neutral-950);">
-            
-            // Main display area - full viewport card
-            <div class="relative w-full max-w-6xl mx-4 flex-1 flex flex-col">
-                
-                // Navigation - Previous
+        <div 
+            class="flex flex-col items-center justify-center min-h-screen w-full px-2 overflow-x-hidden"
+            style="background-color: var(--color-neutral-950); box-sizing: border-box;"
+        >
+            // Header - mobile-first sizing
+            <div class="text-center mb-3 w-full">
+                <h2 
+                    class="text-lg font-bold mb-1"
+                    style="color: var(--color-surface-50);"
+                >
+                    { if *showing_models { "Models" } else { "Agents" } }
+                </h2>
+                <p 
+                    class="text-xs"
+                    style="color: var(--color-surface-400);"
+                >
+                    { "Tap arrows to navigate" }
+                </p>
+            </div>
+
+            // Navigation row
+            <div class="flex items-center justify-between w-full max-w-xs px-2 gap-2 mb-3">
                 <button 
-                    onclick={prev_project}
-                    class="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-4 rounded-full transition hover:scale-110"
+                    onclick={on_prev}
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-lg transition hover:scale-110"
                     style="background-color: rgba(255,255,255,0.1); color: var(--color-surface-50);"
                 >
                     { "←" }
                 </button>
 
-                // Navigation - Next
+                // Dots
+                <div class="flex gap-1">
+                    { for (0..total_count).map(|i| html! {
+                        <div 
+                            class={if i == current_index { 
+                                "w-2 h-2 rounded-full transition-all bg-white" 
+                            } else { 
+                                "w-1.5 h-1.5 rounded-full opacity-50 transition-all bg-white/70" 
+                            }}
+                        />
+                    })}
+                </div>
+
                 <button 
-                    onclick={next_project}
-                    class="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-4 rounded-full transition hover:scale-110"
+                    onclick={on_next}
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-lg transition hover:scale-110"
                     style="background-color: rgba(255,255,255,0.1); color: var(--color-surface-50);"
                 >
                     { "→" }
                 </button>
+            </div>
 
-                // Main card
+            // 3D Flip container
+            <div 
+                class="relative w-[85vw] aspect-[4/5] max-w-xs"
+                style="perspective: 1000px;"
+            >
                 <div 
-                    class="flex-1 flex flex-col items-center justify-center p-12 rounded-2xl shadow-2xl transition-all duration-500 mx-16"
-                    style={format!("background-color: {}; color: {};", card_bg, card_text)}
+                    class="w-full h-full transition-transform duration-700"
+                    style={format!(
+                        "transform-style: preserve-3d; transform: rotateY({}deg);",
+                        rotation
+                    )}
                 >
-                    // Category badge
+                    // Models side
                     <div 
-                        class="px-4 py-2 rounded-full text-sm font-bold mb-8"
-                        style="background-color: rgba(0,0,0,0.2);"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-4 rounded-xl shadow-2xl"
+                        style="background-color: var(--color-highlight-500); backface-visibility: hidden;"
                     >
-                        { if *showing_models { "MODEL" } else { "AGENT" } }
+                        <div class="text-5xl mb-3">{ current_icon }</div>
+                        
+                        <h3 class="text-base font-bold mb-2 text-center text-neutral-950">
+                            { current_title }
+                        </h3>
+                        
+                        <p class="text-xs text-center mb-2 text-neutral-900 opacity-90 px-2">
+                            { current_desc }
+                        </p>
+                        
+                        <p class="text-xs text-center text-neutral-800 opacity-80 mb-3 px-2">
+                            { current_details }
+                        </p>
+
+                        <button class="px-4 py-2 rounded-full text-xs font-bold mt-auto" style="background-color: rgba(0,0,0,0.8); color: white;">
+                            { "View Project" }
+                        </button>
                     </div>
 
-                    // Project icon
-                    <div class="text-8xl mb-8">{ current_icon }</div>
-
-                    // Project title
-                    <h2 class="text-5xl font-bold mb-4 text-center">{ current_title }</h2>
-
-                    // Description
-                    <p class="text-2xl text-center mb-6 opacity-90 max-w-2xl">
-                        { current_desc }
-                    </p>
-
-                    // Details
-                    <p class="text-lg text-center mb-8 opacity-80 max-w-xl">
-                        { current_details }
-                    </p>
-
-                    // View button
-                    <button 
-                        class="px-8 py-3 rounded-full font-bold transition hover:scale-105"
-                        style="background-color: rgba(0,0,0,0.8); color: white;"
+                    // Agents side
+                    <div 
+                        class="absolute inset-0 flex flex-col items-center justify-center p-4 rounded-xl shadow-2xl"
+                        style="background-color: var(--color-primary-600); backface-visibility: hidden; transform: rotateY(180deg);"
                     >
-                        { "View Project" }
-                    </button>
+                        <div class="text-5xl mb-3">{ current_icon }</div>
+                        
+                        <h3 class="text-base font-bold mb-2 text-center text-white">
+                            { current_title }
+                        </h3>
+                        
+                        <p class="text-xs text-center mb-2 text-white opacity-90 px-2">
+                            { current_desc }
+                        </p>
+                        
+                        <p class="text-xs text-center text-white opacity-80 mb-3 px-2">
+                            { current_details }
+                        </p>
 
-                    // Dot indicators
-                    <div class="flex gap-3 mt-8">
-                        { for (0..total_count).map(|i| html! {
-                            <div 
-                                class={if i == current_index { "w-4 h-4 rounded-full transition-all" } else { "w-3 h-3 rounded-full opacity-50 transition-all" }}
-                                style="background-color: rgba(0,0,0,0.6);"
-                            />
-                        })}
+                        <button class="px-4 py-2 rounded-full text-xs font-bold mt-auto" style="background-color: rgba(0,0,0,0.8); color: white;">
+                            { "View Project" }
+                        </button>
                     </div>
                 </div>
             </div>
 
-            // Bottom flip control
-            <div class="flex items-center gap-6 p-8">
+            // Flip button
+            <div class="flex items-center justify-center gap-2 mt-5">
                 <span 
-                    class="text-xl font-bold transition-colors"
+                    class="text-xs font-medium"
                     style={if *showing_models { "color: var(--color-highlight-400);" } else { "color: var(--color-surface-500);" }}
                 >
-                    { "Models" }
+                    { "M" }
                 </span>
 
-                // Flip slider
-                <div class="relative w-80 h-12 rounded-full overflow-hidden cursor-pointer"
-                     style="background: linear-gradient(to right, var(--color-highlight-500), var(--color-primary-500));"
+                <button 
+                    class="w-10 h-10 rounded-full flex items-center justify-center text-lg transition hover:scale-110"
+                    style="background-color: var(--color-surface-800); color: var(--color-surface-100);"
+                    onclick={on_flip_click}
                 >
-                    <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        value={flip.to_string()}
-                        oninput={on_flip_input}
-                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    // Sliding indicator
-                    <div 
-                        class="absolute top-1 h-10 w-20 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 shadow-lg"
-                        style={format!(
-                            "background-color: rgba(255,255,255,0.9); left: calc({}% - 40px); color: var(--color-neutral-950);",
-                            *flip * 100.0
-                        )}
-                    >
-                        { if *showing_models { "←" } else { "→" } }
-                    </div>
-                </div>
+                    { if *showing_models { "→" } else { "←" } }
+                </button>
 
                 <span 
-                    class="text-xl font-bold transition-colors"
+                    class="text-xs font-medium"
                     style={if !*showing_models { "color: var(--color-primary-400);" } else { "color: var(--color-surface-500);" }}
                 >
-                    { "Agents" }
+                    { "A" }
                 </span>
             </div>
         </div>
