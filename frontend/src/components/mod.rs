@@ -7,6 +7,7 @@ pub mod contact;
 pub mod footer;
 pub mod header;
 pub mod hero;
+pub mod loading;
 pub mod portfolio;
 pub mod process;
 
