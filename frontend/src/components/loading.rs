@@ -1,6 +1,6 @@
 use yew::prelude::*;
-use web_sys::window;
-use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 
 /// Loading screen that displays while critical assets preload
