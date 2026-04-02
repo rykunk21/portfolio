@@ -1,6 +1,6 @@
 use yew::prelude::*;
-use web_sys::window;
-use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 
 /// Loading screen that displays while critical assets preload
@@ -223,8 +223,8 @@ async fn preload_single_image(src: &str) -> bool {
     // Race between load and timeout
     let result = js_sys::Promise::race(
         &js_sys::Array::from_iter([
-            promise.unchecked_ref(),
-            timeout.unchecked_ref(),
+            promise.unchecked_ref::<JsValue>(),
+            timeout.unchecked_ref::<JsValue>(),
         ])
     );
     
