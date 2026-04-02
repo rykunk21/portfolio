@@ -223,8 +223,8 @@ async fn preload_single_image(src: &str) -> bool {
     // Race between load and timeout
     let result = js_sys::Promise::race(
         &js_sys::Array::from_iter([
-            promise.unchecked_ref(),
-            timeout.unchecked_ref(),
+            promise.unchecked_ref::<JsValue>(),
+            timeout.unchecked_ref::<JsValue>(),
         ])
     );
     
