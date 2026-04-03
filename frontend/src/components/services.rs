@@ -124,7 +124,7 @@ pub fn services() -> Html {
     html! {
         <div 
             class="flex flex-col items-center justify-center min-h-screen w-full px-2 overflow-x-hidden"
-            style="background-color: var(--color-neutral-950); box-sizing: border-box;"
+            style="box-sizing: border-box;"
         >
             // Header - mobile-first sizing
             <div class="text-center mb-3 w-full">

@@ -5,7 +5,6 @@ pub fn contact() -> Html {
     html! {
     <section
         class="text-surface-400 body-font relative"
-        style="background-color: var(--color-neutral-950);"
     >
             <div class="container px-5 py-12 mx-auto">
                 // Header

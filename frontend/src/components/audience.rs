@@ -56,7 +56,7 @@ pub fn audience(props: &AudienceProps) -> Html {
 
     html! {
 
-    <section style="background-color: var(--color-neutral-900);">
+    <section>
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             /* Section Header */
             <div class="mx-auto max-w-lg text-center">

@@ -3,7 +3,7 @@ use yew::prelude::*;
 #[function_component(About)]
 pub fn about() -> Html {
     html! {
-        <section class="min-h-screen py-16 px-6 flex flex-col md:flex-row items-center justify-between gap-8" style="background-color: var(--color-neutral-950); color: var(--color-surface-50);">
+        <section class="min-h-screen py-16 px-6 flex flex-col md:flex-row items-center justify-between gap-8" style="color: var(--color-surface-50);">
             // Left Side: Image
             <div class="w-full md:w-5/12 flex justify-center h-full md:justify-end">
                 <img
