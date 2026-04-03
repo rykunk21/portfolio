@@ -61,7 +61,7 @@ pub fn loading_screen(props: &LoadingScreenProps) -> Html {
                 }
                 
                 // QUICKER: shorter pause with completed text
-                sleep_ms(200).await;
+                sleep_ms(800).await;
                 
                 // Hide cursor
                 show_cursor.set(false);
