@@ -1,9 +1,10 @@
 use yew::prelude::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::spawn_local;
 
-/// Phase 1: Static 4-layer parallax background
-/// Beach at night scene with depth via scroll-speed differences
+/// Fixed parallax background with beach/ocean scene
+/// Layers extend beyond viewport to prevent hard edges
 #[derive(Properties, PartialEq)]
 pub struct BackgroundProps {
     #[prop_or_default]
@@ -31,153 +32,192 @@ pub fn background(props: &BackgroundProps) -> Html {
             }) as Box<dyn FnMut()>);
             
             let _ = window.add_event_listener_with_callback("scroll", closure.as_ref().unchecked_ref());
-            
-            // Closure will be kept alive by JS event listener
             closure.forget();
         });
     }
     
-    // Calculate parallax offsets for each layer
-    let star_offset = *scroll_y * 0.05;      // Z-4: barely moves
-    let ocean_offset = *scroll_y * 0.15;     // Z-3: slow
-    let beach_offset = *scroll_y * 0.30;     // Z-2: medium
-    let fire_offset = *scroll_y * 0.50;      // Z-1: fastest (but still slower than content)
+    // Calculate parallax offsets - extended range for more depth
+    let nebula_offset = *scroll_y * 0.02;      // Z-5: very deep
+    let star_far_offset = *scroll_y * 0.05;      // Z-4: far stars
+    let star_near_offset = *scroll_y * 0.08;     // Z-3: near stars
+    let moon_offset = *scroll_y * 0.10;         // Z-2: moon
+    let ocean_offset = *scroll_y * 0.15;         // Z-1: ocean
+    let beach_offset = *scroll_y * 0.25;        // Z-0: beach
+    
+    // Fire intensity for lighting effect (pulsing)
+    let time = use_state(|| 0.0_f64);
+    {
+        let time = time.clone();
+        use_effect_with((), move |_| {
+            let mut i = 0.0;
+            spawn_local(async move {
+                loop {
+                    sleep_ms(50).await;
+                    i += 0.05;
+                    time.set(i);
+                }
+            });
+            || {}
+        });
+    }
+    
+    // Calculate fire glow intensity (0.3 to 0.7 range)
+    let fire_intensity = 0.5 + 0.2 * (*time).sin();
+    let fire_warmth = (0.3 + 0.15 * ((*time * 1.3).sin())) as f32;
     
     html! {
-        <div class="relative min-h-screen bg-neutral-950 overflow-x-hidden">
-            // Layer Z-4: Star field (deepest)
-            <div 
-                class="fixed inset-0 pointer-events-none"
-                style={format!(
-                    "transform: translateY({}px); background: {};",
-                    star_offset,
-                    "radial-gradient(ellipse at bottom, #1a1a2e 0%, #0f0f1a 40%, #000000 100%)"
-                )}
-            >
-                // Static stars (CSS-generated)
-                <div class="stars-layer">
-                    // Top-left cluster
-                    <div class="star" style="top: 10%; left: 15%; opacity: 0.8; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 12%; left: 18%; opacity: 0.5; width: 1px; height: 1px;"></div>
-                    <div class="star" style="top: 8%; left: 22%; opacity: 0.9; width: 3px; height: 3px;"></div>
-                    <div class="star" style="top: 15%; left: 12%; opacity: 0.6; width: 1px; height: 1px;"></div>
-                    
-                    // Top-right cluster
-                    <div class="star" style="top: 5%; left: 75%; opacity: 0.7; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 8%; left: 80%; opacity: 0.4; width: 1px; height: 1px;"></div>
-                    <div class="star" style="top: 3%; left: 85%; opacity: 0.8; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 12%; left: 78%; opacity: 0.5; width: 1px; height: 1px;"></div>
-                    
-                    // Mid-left
-                    <div class="star" style="top: 25%; left: 5%; opacity: 0.6; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 28%; left: 8%; opacity: 0.8; width: 1px; height: 1px;"></div>
-                    <div class="star" style="top: 22%; left: 11%; opacity: 0.4; width: 2px; height: 2px;"></div>
-                    
-                    // Mid-right
-                    <div class="star" style="top: 20%; left: 90%; opacity: 0.9; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 23%; left: 93%; opacity: 0.5; width: 1px; height: 1px;"></div>
-                    <div class="star" style="top: 18%; left: 88%; opacity: 0.7; width: 1px; height: 1px;"></div>
-                    
-                    // Scattered
-                    <div class="star" style="top: 35%; left: 30%; opacity: 0.6; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 38%; left: 45%; opacity: 0.4; width: 1px; height: 1px;"></div>
-                    <div class="star" style="top: 32%; left: 60%; opacity: 0.8; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 40%; left: 70%; opacity: 0.5; width: 1px; height: 1px;"></div>
-                    <div class="star" style="top: 45%; left: 25%; opacity: 0.7; width: 1px; height: 1px;"></div>
-                    <div class="star" style="top: 15%; left: 50%; opacity: 0.6; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 30%; left: 85%; opacity: 0.5; width: 1px; height: 1px;"></div>
-                    <div class="star" style="top: 42%; left: 10%; opacity: 0.8; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 48%; left: 55%; opacity: 0.4; width: 1px; height: 1px;"></div>
-                    <div class="star" style="top: 8%; left: 40%; opacity: 0.9; width: 2px; height: 2px;"></div>
+        <div class="relative min-h-screen overflow-x-hidden">
+            // Base gradient - extends infinitely
+            <div class="fixed inset-0 -top-[100vh] -bottom-[50vh]" 
+                style="background: linear-gradient(180deg, #050510 0%, #0a0a1a 20%, #0f1419 60%, #1a1510 100%);"
+            />
+            
+            // Layer Z-5: Deep nebula/mist (very subtle)
+            <div class="fixed -top-[100vh] -left-[20vw] -right-[20vw] -bottom-[50vh] pointer-events-none opacity-40"
+                style={format!("transform: translateY({}px);", nebula_offset)}>
+                <div class="absolute inset-0" 
+                    style="background: radial-gradient(ellipse 80% 50% at 30% 20%, rgba(40,30,60,0.4) 0%, transparent 60%);">
+                </div>
+                <div class="absolute inset-0"
+                    style="background: radial-gradient(ellipse 60% 40% at 70% 30%, rgba(30,40,50,0.3) 0%, transparent 50%);">
                 </div>
             </div>
             
-            // Layer Z-3: Ocean (distant)
-            <div 
-                class="fixed bottom-0 left-0 right-0 h-96 pointer-events-none"
-                style={format!(
-                    "transform: translateY({}px); background: {};",
-                    ocean_offset,
-                    "linear-gradient(to top, #0d1b2a 0%, #1b263b 30%, transparent 100%)"
-                )}
-            >
-                // Subtle wave line at horizon
-                <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent opacity-30"></div>
+            // Layer Z-4: Far stars
+            <div class="fixed -top-[100vh] inset-x-0 -bottom-[50vh] pointer-events-none"
+                style={format!("transform: translateY({}px);", star_far_offset)}>
+                { for (0..80).map(|i| {
+                    let top = ((i * 137) % 150) as f32; // 0-150vh spread
+                    let left = ((i * 73) % 100) as f32;
+                    let size = if i % 7 == 0 { 3 } else if i % 3 == 0 { 2 } else { 1 };
+                    let opacity = 0.3 + ((i % 5) as f32 * 0.15);
+                    html! {
+                        <div class="star-far"
+                            style={format!(
+                                "top: {}vh; left: {}%; width: {}px; height: {}px; opacity: {};",
+                                top, left, size, size, opacity
+                            )}>
+                        </div>
+                    }
+                })}
             </div>
             
-            // Layer Z-2: Beach silhouette
-            <div 
-                class="fixed bottom-0 left-0 right-0 h-64 pointer-events-none"
-                style={format!(
-                    "transform: translateY({}px); {}",
-                    beach_offset,
-                    "background: linear-gradient(to top, #0f1419 0%, #1a1f2e 40%, transparent 100%);"
-                )}
-            >
-                // Dune silhouette (CSS shapes)
-                <div class="beach-dunes absolute bottom-0 left-0 right-0 h-full"></div>
+            // Layer Z-3: Near stars (brighter, larger)
+            <div class="fixed -top-[100vh] inset-x-0 -bottom-[50vh] pointer-events-none"
+                style={format!("transform: translateY({}px);", star_near_offset)}>
+                { for (0..40).map(|i| {
+                    let top = ((i * 217) % 140) as f32;
+                    let left = ((i * 137) % 100) as f32;
+                    let size = if i % 5 == 0 { 4 } else { 2 };
+                    let opacity = 0.5 + ((i % 4) as f32 * 0.15);
+                    let blur = if i % 10 == 0 { 2 } else { 0 };
+                    html! {
+                        <div class="star-near"
+                            style={format!(
+                                "top: {}vh; left: {}%; width: {}px; height: {}px; opacity: {}; filter: blur({}px);",
+                                top, left, size, size, opacity, blur
+                            )}>
+                        </div>
+                    }
+                })}
             </div>
             
-            // Layer Z-1: Campfire base (foreground element)
-            <div 
-                class="fixed bottom-8 right-12 w-32 h-40 pointer-events-none"
-                style={format!(
-                    "transform: translateY({}px);",
-                    fire_offset
-                )}
-            >
-                // Static campfire logs (Phase 1 - no animation)
-                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-10">
-                    // Log 1
-                    <div class="absolute bottom-2 left-2 w-16 h-3 rounded-full transform rotate-12"
-                         style="background: #3d2817; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">
-                    </div>
-                    // Log 2
-                    <div class="absolute bottom-2 right-2 w-14 h-3 rounded-full transform -rotate-12"
-                         style="background: #4a301c; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">
-                    </div>
-                    // Log 3 (crossing)
-                    <div class="absolute bottom-4 left-4 w-12 h-3 rounded-full transform rotate-45"
-                         style="background: #362312; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">
-                    </div>
+            // Layer Z-2: Moon
+            <div class="fixed -top-[50vh] inset-x-0 -bottom-[50vh] pointer-events-none"
+                style={format!("transform: translateY({}px);", moon_offset)}>
+                <div class="absolute" 
+                    style="top: 15vh; right: 15%; width: 80px; height: 80px; border-radius: 50%;
+                           background: radial-gradient(circle at 30% 30%, #f5f0e6, #d4cfc4, #b0aba0);
+                           box-shadow: 0 0 60px rgba(245, 240, 230, 0.3), 0 0 120px rgba(245, 240, 230, 0.1);">
                 </div>
-                
-                // Static flame placeholder (red glow, no animation yet)
-                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-16 h-24 rounded-full opacity-40 blur-xl"
-                     style="background: radial-gradient(circle, #fa8805 0%, #ff6b00 30%, transparent 70%);">
-                </div>
+                // Moon craters (subtle)
+                <div class="absolute" style="top: calc(15vh + 20px); right: calc(15% + 15px); width: 15px; height: 15px; 
+                       border-radius: 50%; background: rgba(180,175,170,0.3); box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);"></div>
+                <div class="absolute" style="top: calc(15vh + 45px); right: calc(15% + 35px); width: 10px; height: 10px; 
+                       border-radius: 50%; background: rgba(180,175,170,0.3); box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);"></div>
             </div>
             
-            // Content layer (Z-0, normal scroll)
+            // Layer Z-1: Ocean (distant)
+            <div class="fixed bottom-0 left-0 right-0 h-[40vh] pointer-events-none"
+                style={format!("transform: translateY({}px); 
+                               background: linear-gradient(to top, #0a1929 0%, #0d1b2a 30%, #1b263b 70%, transparent 100%);",
+                               ocean_offset)}>
+                // Wave lines
+                <div class="absolute top-[10%] left-0 right-0 h-px" 
+                     style="background: linear-gradient(90deg, transparent 0%, rgba(100,130,160,0.3) 20%, rgba(100,130,160,0.3) 80%, transparent 100%);"></div>
+                <div class="absolute top-[25%] left-0 right-0 h-px"
+                     style="background: linear-gradient(90deg, transparent 10%, rgba(100,130,160,0.2) 30%, rgba(100,130,160,0.2) 70%, transparent 100%);"></div>
+                <div class="absolute top-[45%] left-0 right-0 h-px"
+                     style="background: linear-gradient(90deg, transparent 0%, rgba(100,130,160,0.15) 25%, rgba(100,130,160,0.15) 75%, transparent 100%);"></div>
+                // Moon reflection
+                <div class="absolute top-[5%] right-[calc(15%-20px)] w-[100px] h-[30px]"
+                     style="background: linear-gradient(180deg, rgba(245,240,230,0.15) 0%, transparent 100%); 
+                            filter: blur(8px); transform: scaleY(0.3);"></div>
+            </div>
+            
+            // Layer Z-0: Beach (foreground)
+            <div class="fixed bottom-0 left-0 right-0 h-[25vh] pointer-events-none"
+                style={format!("transform: translateY({}px);", beach_offset)}>
+                // Sand base
+                <div class="absolute bottom-0 inset-x-0 h-full"
+                     style="background: linear-gradient(to top, #0f1410 0%, #1a1814 40%, #1e1a14 70%, transparent 100%);">
+                </div>
+                // Dune shapes
+                <div class="absolute bottom-0 left-[-10%] w-[50%] h-[80%] rounded-full opacity-60"
+                     style="background: radial-gradient(ellipse 100% 80% at 50% 100%, #161411 0%, transparent 70%);"></div>
+                <div class="absolute bottom-0 left-[20%] w-[60%] h-[100%] rounded-full opacity-50"
+                     style="background: radial-gradient(ellipse 100% 90% at 50% 100%, #1a1612 0%, transparent 70%);"></div>
+                <div class="absolute bottom-0 right-[-10%] w-[50%] h-[70%] rounded-full opacity-70"
+                     style="background: radial-gradient(ellipse 100% 70% at 50% 100%, #141210 0%, transparent 70%);"></div>
+                // Small rocks/details
+                <div class="absolute bottom-[10%] right-[25%] w-4 h-3 rounded-[40%]"
+                     style="background: #0c0a08; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);"></div>
+                <div class="absolute bottom-[15%] right-[28%] w-2 h-2 rounded-[40%]"
+                     style="background: #0d0b09; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);"></div>
+                <div class="absolute bottom-[8%] right-[22%] w-3 h-2 rounded-[40%]"
+                     style="background: #0a0806; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);"></div>
+            </div>
+            
+            // Fire glow overlay (lighting effect only, no visible campfire)
+            <div class="fixed bottom-0 right-0 w-[40vw] h-[50vh] pointer-events-none"
+                 style={format!("background: radial-gradient(ellipse 80% 60% at 70% 100%, rgba(250,136,5,{:.2}) 0%, rgba(200,80,0,{:.2}) 30%, rgba(100,40,0,0.1) 55%, transparent 70%);",
+                        fire_intensity, fire_intensity * 0.6)}>
+            </div>
+            
+            // Warm tint overlay (subtle color grading)
+            <div class="fixed inset-0 pointer-events-none"
+                 style={format!("background: radial-gradient(ellipse 50% 40% at 80% 100%, rgba(250,150,50,{:.3}) 0%, transparent 60%); mix-blend-mode: overlay;",
+                        fire_warmth)}>
+            </div>
+            
+            // Content layer
             <div class="relative z-10">
                 { props.children.clone() }
             </div>
             
-            // CSS styles for stars and dunes
+            // CSS styles
             <style>
-                {".stars-layer {
-                    position: absolute;
-                    inset: 0;
-                }
-                
-                .star {
+                {".star-far, .star-near {
                     position: absolute;
                     border-radius: 50%;
                     background: white;
-                    box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
                 }
-                
-                .star:nth-child(1), .star:nth-child(7), .star:nth-child(19) {
-                    box-shadow: 0 0 6px rgba(255, 255, 255, 0.6), 0 0 12px rgba(255, 255, 255, 0.3);
-                }
-                
-                .beach-dunes {
-                    background: 
-                        radial-gradient(ellipse 60% 40% at 20% 100%, #1a1f2e 0%, transparent 50%),
-                        radial-gradient(ellipse 50% 35% at 45% 100%, #151922 0%, transparent 45%),
-                        radial-gradient(ellipse 70% 45% at 75% 100%, #1e2330 0%, transparent 50%);
+                .star-near {
+                    box-shadow: 0 0 4px rgba(255,255,255,0.5);
                 }"}
             </style>
         </div>
     }
+}
+
+async fn sleep_ms(ms: u32) {
+    let promise = js_sys::Promise::new(
+        &mut |resolve, _| {
+            let window = web_sys::window().unwrap();
+            let _ = window.set_timeout_with_callback_and_timeout_and_arguments_0(
+                &resolve, ms as i32
+            );
+        }
+    );
+    wasm_bindgen_futures::JsFuture::from(promise).await.ok();
 }
