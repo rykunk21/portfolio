@@ -2,6 +2,7 @@ pub mod grids;
 
 pub mod about;
 pub mod audience;
+pub mod background;
 pub mod common;
 pub mod contact;
 pub mod footer;
