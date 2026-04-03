@@ -13,7 +13,17 @@ pub struct LoadingScreenProps {
 
 #[function_component(LoadingScreen)]
 pub fn loading_screen(props: &LoadingScreenProps) -> Html {
-    let is_loading = use_state(|| true);
+    // Check if user has visited before
+    let has_visited = use_state(|| {
+        if let Some(window) = web_sys::window() {
+            if let Ok(Some(storage)) = window.local_storage() {
+                return storage.get_item("portfolio_visited").ok().flatten().is_some();
+            }
+        }
+        false
+    });
+    
+    let is_loading = use_state(|| !*has_visited);
     
     // Scramble animation state
     let display_text = use_state(|| String::new());
@@ -74,6 +84,13 @@ pub fn loading_screen(props: &LoadingScreenProps) -> Html {
                 
                 // Hide loading screen
                 is_loading.set(false);
+                
+                // Mark as visited in localStorage so animation skips next time
+                if let Some(window) = web_sys::window() {
+                    if let Ok(Some(storage)) = window.local_storage() {
+                        let _ = storage.set_item("portfolio_visited", "true");
+                    }
+                }
             });
             || {}
         }
