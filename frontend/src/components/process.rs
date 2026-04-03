@@ -61,7 +61,7 @@ pub fn process(props: &ProcessProps) -> Html {
     };
 
     html! {
-        <section class="py-8 px-4 sm:px-6 lg:px-8" style="background-color: var(--color-neutral-950);">
+        <section class="py-8 px-4 sm:px-6 lg:px-8">
             <div class="max-w-6xl mx-auto">
                 <h2 class="text-2xl font-bold text-center mb-8 md:text-3xl" style="color: var(--color-surface-50);">
                     { section_title }

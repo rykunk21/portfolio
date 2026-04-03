@@ -3,8 +3,7 @@ use yew::prelude::*;
 #[function_component(Hero)]
 pub fn hero() -> Html {
     html! {
-        <section style="background-color: var(--color-neutral-950); color: var(--color-surface-50);" class="relative overflow-x-hidden">
-            <div style="background: linear-gradient(to bottom right, var(--color-neutral-900), var(--color-neutral-950), var(--color-neutral-950));" class="absolute inset-0 -z-10 h-[800px]"></div>
+        <section class="relative overflow-x-hidden text-surface-50">
 
             <main class="max-w-7xl mx-auto px-6 pt-16 pb-24 lg:pt-24">
                 <div class="relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
