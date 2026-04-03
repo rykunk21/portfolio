@@ -1,6 +1,5 @@
 use yew::prelude::*;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
 
 /// UI Depth System: Adds shadow and parallax to content elements
 /// Works with scroll snap to ensure each viewport shows clean composition
@@ -34,14 +33,16 @@ pub fn ui_depth(props: &UIDepthProps) -> Html {
                 None => return,
             };
             
-            let window_for_closure = window.clone();
             let closure = Closure::wrap(Box::new(move || {
-                if let Ok(y) = window_for_closure.scroll_y() {
-                    scroll_y.set(y);
-                    // Calculate viewport index (100vh per section)
-                    let vh = window_for_closure.inner_height().unwrap_or(800) as f64;
-                    let idx = (y / vh) as usize;
-                    viewport_index.set(idx);
+                if let Some(w) = web_sys::window() {
+                    if let Ok(y) = w.scroll_y() {
+                        scroll_y.set(y);
+                        // Calculate viewport index (100vh per section)
+                        let vh_js = w.inner_height().unwrap_or_else(|_| wasm_bindgen::JsValue::from_f64(800.0));
+                        let vh = vh_js.as_f64().unwrap_or(800.0);
+                        let idx = (y / vh) as usize;
+                        viewport_index.set(idx);
+                    }
                 }
             }) as Box<dyn FnMut()>);
             
@@ -51,7 +52,7 @@ pub fn ui_depth(props: &UIDepthProps) -> Html {
     }
     
     // Calculate offset based on position within viewport
-    let vh = 800.0; // Approximate, could get from window
+    let vh = 800.0;
     let position_in_viewport = *scroll_y % vh;
     let parallax_offset = position_in_viewport * (1.0 - props.depth);
     
@@ -61,7 +62,7 @@ pub fn ui_depth(props: &UIDepthProps) -> Html {
     let shadow_y = 4.0 + (props.shadow * 8.0);
     
     // Warm lighting from fire (bottom right)
-    let fire_distance = 100.0 - (*scroll_y % vh); // Distance from bottom of viewport
+    let fire_distance = 100.0 - (*scroll_y % vh);
     let fire_glow = if fire_distance < 200.0 {
         (1.0 - fire_distance / 200.0) * 0.15 * props.shadow
     } else {
