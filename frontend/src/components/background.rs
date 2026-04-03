@@ -3,8 +3,8 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 
-/// Fixed parallax background with beach/ocean scene
-/// Layers extend beyond viewport to prevent hard edges
+/// Fixed parallax background with beach scene
+/// Multiple star layers + beach layers that interact with UI
 #[derive(Properties, PartialEq)]
 pub struct BackgroundProps {
     #[prop_or_default]
@@ -13,7 +13,6 @@ pub struct BackgroundProps {
 
 #[function_component(Background)]
 pub fn background(props: &BackgroundProps) -> Html {
-    // Track scroll position for parallax
     let scroll_y = use_state(|| 0.0_f64);
     
     {
@@ -36,15 +35,18 @@ pub fn background(props: &BackgroundProps) -> Html {
         });
     }
     
-    // Calculate parallax offsets - extended range for more depth
-    let nebula_offset = *scroll_y * 0.02;      // Z-5: very deep
-    let star_far_offset = *scroll_y * 0.05;      // Z-4: far stars
-    let star_near_offset = *scroll_y * 0.08;     // Z-3: near stars
-    let moon_offset = *scroll_y * 0.10;         // Z-2: moon
-    let ocean_offset = *scroll_y * 0.15;         // Z-1: ocean
-    let beach_offset = *scroll_y * 0.25;        // Z-0: beach
+    // Extended parallax offsets - stars are fixed-ish, beach moves faster
+    let star_layer1_offset = *scroll_y * 0.02;   // Deepest stars (almost fixed)
+    let star_layer2_offset = *scroll_y * 0.04;   // Far stars
+    let star_layer3_offset = *scroll_y * 0.06;   // Mid stars  
+    let star_layer4_offset = *scroll_y * 0.08;   // Near stars
+    let moon_offset = *scroll_y * 0.10;         // Moon
+    let ocean_back_offset = *scroll_y * 0.15;   // Back ocean
+    let ocean_front_offset = *scroll_y * 0.22;   // Front ocean
+    let beach_dune_offset = *scroll_y * 0.30;   // Dunes (obscures UI)
+    let beach_sand_offset = *scroll_y * 0.38;   // Sand (obscures more UI)
     
-    // Fire intensity for lighting effect (pulsing)
+    // Fire animation
     let time = use_state(|| 0.0_f64);
     {
         let time = time.clone();
@@ -61,153 +63,166 @@ pub fn background(props: &BackgroundProps) -> Html {
         });
     }
     
-    // Calculate fire glow intensity (0.3 to 0.7 range)
     let fire_intensity = 0.5 + 0.2 * (*time).sin();
-    let fire_warmth = (0.3 + 0.15 * ((*time * 1.3).sin())) as f32;
     
     html! {
         <div class="relative min-h-screen overflow-x-hidden">
-            // Base gradient - extends infinitely
-            <div class="fixed inset-0 -top-[100vh] -bottom-[50vh]" 
-                style="background: linear-gradient(180deg, #050510 0%, #0a0a1a 20%, #0f1419 60%, #1a1510 100%);"
+            // Base gradient
+            <div class="fixed inset-0" 
+                style="background: linear-gradient(180deg, #030308 0%, #080818 15%, #0c1220 40%, #101820 70%, #151410 100%);"
             />
             
-            // Layer Z-5: Deep nebula/mist (very subtle)
-            <div class="fixed -top-[100vh] -left-[20vw] -right-[20vw] -bottom-[50vh] pointer-events-none opacity-40"
-                style={format!("transform: translateY({}px);", nebula_offset)}>
-                <div class="absolute inset-0" 
-                    style="background: radial-gradient(ellipse 80% 50% at 30% 20%, rgba(40,30,60,0.4) 0%, transparent 60%);">
-                </div>
-                <div class="absolute inset-0"
-                    style="background: radial-gradient(ellipse 60% 40% at 70% 30%, rgba(30,40,50,0.3) 0%, transparent 50%);">
-                </div>
+            // Star Layer 1: Deepest (200 stars, smallest, slowest)
+            <div class="fixed inset-0 pointer-events-none"
+                style={format!("transform: translateY({}px);", star_layer1_offset)}>
+                { generate_stars(200, 1, 0.25, 0.45, "star-dim") }
             </div>
             
-            // Layer Z-4: Far stars
-            <div class="fixed -top-[100vh] inset-x-0 -bottom-[50vh] pointer-events-none"
-                style={format!("transform: translateY({}px);", star_far_offset)}>
-                { for (0..80).map(|i| {
-                    let top = ((i * 137) % 150) as f32; // 0-150vh spread
-                    let left = ((i * 73) % 100) as f32;
-                    let size = if i % 7 == 0 { 3 } else if i % 3 == 0 { 2 } else { 1 };
-                    let opacity = 0.3 + ((i % 5) as f32 * 0.15);
-                    html! {
-                        <div class="star-far"
-                            style={format!(
-                                "top: {}vh; left: {}%; width: {}px; height: {}px; opacity: {};",
-                                top, left, size, size, opacity
-                            )}>
-                        </div>
-                    }
-                })}
+            // Star Layer 2: Far (150 stars, small)
+            <div class="fixed inset-0 pointer-events-none"
+                style={format!("transform: translateY({}px);", star_layer2_offset)}>
+                { generate_stars(150, 2, 0.3, 0.55, "star-far") }
             </div>
             
-            // Layer Z-3: Near stars (brighter, larger)
-            <div class="fixed -top-[100vh] inset-x-0 -bottom-[50vh] pointer-events-none"
-                style={format!("transform: translateY({}px);", star_near_offset)}>
-                { for (0..40).map(|i| {
-                    let top = ((i * 217) % 140) as f32;
-                    let left = ((i * 137) % 100) as f32;
-                    let size = if i % 5 == 0 { 4 } else { 2 };
-                    let opacity = 0.5 + ((i % 4) as f32 * 0.15);
-                    let blur = if i % 10 == 0 { 2 } else { 0 };
-                    html! {
-                        <div class="star-near"
-                            style={format!(
-                                "top: {}vh; left: {}%; width: {}px; height: {}px; opacity: {}; filter: blur({}px);",
-                                top, left, size, size, opacity, blur
-                            )}>
-                        </div>
-                    }
-                })}
+            // Star Layer 3: Mid (100 stars, medium)
+            <div class="fixed inset-0 pointer-events-none"
+                style={format!("transform: translateY({}px);", star_layer3_offset)}>
+                { generate_stars(100, 3, 0.35, 0.65, "star-mid") }
             </div>
             
-            // Layer Z-2: Moon
-            <div class="fixed -top-[50vh] inset-x-0 -bottom-[50vh] pointer-events-none"
+            // Star Layer 4: Near (50 stars, brightest, some twinkle)
+            <div class="fixed inset-0 pointer-events-none"
+                style={format!("transform: translateY({}px);", star_layer4_offset)}>
+                { generate_stars(50, 4, 0.5, 0.9, "star-near") }
+            </div>
+            
+            // Moon
+            <div class="fixed -top-[20vh] inset-x-0 -bottom-[50vh] pointer-events-none"
                 style={format!("transform: translateY({}px);", moon_offset)}>
                 <div class="absolute" 
-                    style="top: 15vh; right: 15%; width: 80px; height: 80px; border-radius: 50%;
-                           background: radial-gradient(circle at 30% 30%, #f5f0e6, #d4cfc4, #b0aba0);
-                           box-shadow: 0 0 60px rgba(245, 240, 230, 0.3), 0 0 120px rgba(245, 240, 230, 0.1);">
-                </div>
-                // Moon craters (subtle)
-                <div class="absolute" style="top: calc(15vh + 20px); right: calc(15% + 15px); width: 15px; height: 15px; 
-                       border-radius: 50%; background: rgba(180,175,170,0.3); box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);"></div>
-                <div class="absolute" style="top: calc(15vh + 45px); right: calc(15% + 35px); width: 10px; height: 10px; 
-                       border-radius: 50%; background: rgba(180,175,170,0.3); box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);"></div>
+                    style="top: 20vh; right: 20%; width: 60px; height: 60px; border-radius: 50%;
+                           background: radial-gradient(circle at 35% 35%, #fff8f0 0%, #e8e0d8 30%, #c8c0b8 100%);
+                           box-shadow: 0 0 40px rgba(255,248,240,0.25), 0 0 80px rgba(255,248,240,0.1);" />
+                // Moon reflection on water (positioned lower)
+                <div class="absolute" 
+                    style="top: 75vh; right: calc(20% + 10px); width: 50px; height: 12px; 
+                           border-radius: 50%; background: linear-gradient(90deg, transparent, rgba(255,248,240,0.15), transparent);
+                           filter: blur(4px);" />
             </div>
             
-            // Layer Z-1: Ocean (distant)
-            <div class="fixed bottom-0 left-0 right-0 h-[40vh] pointer-events-none"
+            // Ocean Back Layer
+            <div class="fixed bottom-0 left-0 right-0 h-[50vh] pointer-events-none"
                 style={format!("transform: translateY({}px); 
-                               background: linear-gradient(to top, #0a1929 0%, #0d1b2a 30%, #1b263b 70%, transparent 100%);",
-                               ocean_offset)}>
+                       background: linear-gradient(to top, #081018 0%, #0c1828 25%, #101d30 60%, transparent 100%);",
+                       ocean_back_offset)}>
                 // Wave lines
-                <div class="absolute top-[10%] left-0 right-0 h-px" 
-                     style="background: linear-gradient(90deg, transparent 0%, rgba(100,130,160,0.3) 20%, rgba(100,130,160,0.3) 80%, transparent 100%);"></div>
-                <div class="absolute top-[25%] left-0 right-0 h-px"
-                     style="background: linear-gradient(90deg, transparent 10%, rgba(100,130,160,0.2) 30%, rgba(100,130,160,0.2) 70%, transparent 100%);"></div>
-                <div class="absolute top-[45%] left-0 right-0 h-px"
-                     style="background: linear-gradient(90deg, transparent 0%, rgba(100,130,160,0.15) 25%, rgba(100,130,160,0.15) 75%, transparent 100%);"></div>
-                // Moon reflection
-                <div class="absolute top-[5%] right-[calc(15%-20px)] w-[100px] h-[30px]"
-                     style="background: linear-gradient(180deg, rgba(245,240,230,0.15) 0%, transparent 100%); 
-                            filter: blur(8px); transform: scaleY(0.3);"></div>
+                <div class="absolute top-[20%] left-0 right-0 h-px opacity-20"
+                     style="background: linear-gradient(90deg, transparent 10%, #4a6080 50%, transparent 90%);" />
+                <div class="absolute top-[40%] left-0 right-0 h-px opacity-15"
+                     style="background: linear-gradient(90deg, transparent 20%, #405670 50%, transparent 90%);" />
+                <div class="absolute top-[65%] left-0 right-0 h-px opacity-10"
+                     style="background: linear-gradient(90deg, transparent 30%, #354a60 50%, transparent 70%);" />
             </div>
             
-            // Layer Z-0: Beach (foreground)
-            <div class="fixed bottom-0 left-0 right-0 h-[25vh] pointer-events-none"
-                style={format!("transform: translateY({}px);", beach_offset)}>
-                // Sand base
-                <div class="absolute bottom-0 inset-x-0 h-full"
-                     style="background: linear-gradient(to top, #0f1410 0%, #1a1814 40%, #1e1a14 70%, transparent 100%);">
-                </div>
-                // Dune shapes
-                <div class="absolute bottom-0 left-[-10%] w-[50%] h-[80%] rounded-full opacity-60"
-                     style="background: radial-gradient(ellipse 100% 80% at 50% 100%, #161411 0%, transparent 70%);"></div>
-                <div class="absolute bottom-0 left-[20%] w-[60%] h-[100%] rounded-full opacity-50"
-                     style="background: radial-gradient(ellipse 100% 90% at 50% 100%, #1a1612 0%, transparent 70%);"></div>
-                <div class="absolute bottom-0 right-[-10%] w-[50%] h-[70%] rounded-full opacity-70"
-                     style="background: radial-gradient(ellipse 100% 70% at 50% 100%, #141210 0%, transparent 70%);"></div>
-                // Small rocks/details
-                <div class="absolute bottom-[10%] right-[25%] w-4 h-3 rounded-[40%]"
-                     style="background: #0c0a08; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);"></div>
-                <div class="absolute bottom-[15%] right-[28%] w-2 h-2 rounded-[40%]"
-                     style="background: #0d0b09; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);"></div>
-                <div class="absolute bottom-[8%] right-[22%] w-3 h-2 rounded-[40%]"
-                     style="background: #0a0806; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);"></div>
+            // Ocean Front Layer
+            <div class="fixed -bottom-[10vh] left-0 right-0 h-[35vh] pointer-events-none"
+                style={format!("transform: translateY({}px); 
+                       background: linear-gradient(to top, #081218 0%, #0b1620 40%, transparent 100%);",
+                       ocean_front_offset)}>
+                // Subtle wave texture
+                <div class="absolute inset-0 opacity-30"
+                     style="background: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(60,80,100,0.05) 50px, rgba(60,80,100,0.05) 52px);" />
             </div>
             
-            // Fire glow overlay (lighting effect only, no visible campfire)
-            <div class="fixed bottom-0 right-0 w-[40vw] h-[50vh] pointer-events-none"
-                 style={format!("background: radial-gradient(ellipse 80% 60% at 70% 100%, rgba(250,136,5,{:.2}) 0%, rgba(200,80,0,{:.2}) 30%, rgba(100,40,0,0.1) 55%, transparent 70%);",
-                        fire_intensity, fire_intensity * 0.6)}>
+            // Beach Dune Layer (obscures bottom of UI)
+            <div class="fixed -bottom-[5vh] left-0 right-0 h-[30vh] pointer-events-none"
+                style={format!("transform: translateY({}px);", beach_dune_offset)}>
+                // Back dune (tallest)
+                <div class="absolute bottom-0 left-[-10%] w-[50%] h-[100%]"
+                     style="background: radial-gradient(ellipse 100% 100% at 50% 100%, #0c100c 0%, transparent 70%);
+                             filter: blur(2px);" />
+                // Mid dune
+                <div class="absolute bottom-0 left-[30%] w-[50%] h-[85%]"
+                     style="background: radial-gradient(ellipse 100% 100% at 50% 100%, #0e1210 0%, transparent 70%);
+                             filter: blur(1px);" />
+                // Right dune
+                <div class="absolute bottom-0 right-[-5%] w-[45%] h-[90%]"
+                     style="background: radial-gradient(ellipse 100% 100% at 50% 100%, #0a0e0a 0%, transparent 70%);" />
             </div>
             
-            // Warm tint overlay (subtle color grading)
-            <div class="fixed inset-0 pointer-events-none"
-                 style={format!("background: radial-gradient(ellipse 50% 40% at 80% 100%, rgba(250,150,50,{:.3}) 0%, transparent 60%); mix-blend-mode: overlay;",
-                        fire_warmth)}>
+            // Beach Sand Layer (closest, obscures most UI)
+            <div class="fixed -bottom-[2vh] left-0 right-0 h-[18vh] pointer-events-none"
+                style={format!("transform: translateY({}px);
+                       background: linear-gradient(to top, #0c100a 0%, #101412 30%, #121610 70%, transparent 100%);",
+                       beach_sand_offset)}>
+                // Sand texture
+                <div class="absolute inset-0 opacity-20"
+                     style="background-image: radial-gradient(circle at 20% 80%, rgba(80,70,60,0.3) 0%, transparent 1%),
+                                            radial-gradient(circle at 60% 70%, rgba(70,60,50,0.2) 0%, transparent 1%),
+                                            radial-gradient(circle at 85% 85%, rgba(75,65,55,0.25) 0%, transparent 1%);
+                            background-size: 50px 50px;" />
+                // Small rocks
+                <div class="absolute bottom-[15%] right-[22%] w-3 h-2 rounded-[30%]"
+                     style="background: #080807; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);" />
+                <div class="absolute bottom-[20%] right-[25%] w-2 h-2 rounded-[40%]"
+                     style="background: #0a0908; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);" />
+                <div class="absolute bottom-[12%] right-[28%] w-4 h-3 rounded-[35%]"
+                     style="background: #070606; box-shadow: 1px 1px 3px rgba(0,0,0,0.6);" />
             </div>
+            
+            // Fire glow (warmth at bottom right)
+            <div class="fixed bottom-0 right-0 w-[50vw] h-[40vh] pointer-events-none"
+                 style={format!("background: radial-gradient(ellipse 70% 50% at 80% 100%, rgba(250,136,5,{:.2}) 0%, rgba(180,80,10,{:.2}) 35%, transparent 70%);",
+                        fire_intensity, fire_intensity * 0.6)} />
             
             // Content layer
             <div class="relative z-10">
                 { props.children.clone() }
             </div>
             
-            // CSS styles
+            // CSS
             <style>
-                {".star-far, .star-near {
+                {"
+                .star-dim, .star-far, .star-mid, .star-near {
                     position: absolute;
                     border-radius: 50%;
                     background: white;
                 }
                 .star-near {
-                    box-shadow: 0 0 4px rgba(255,255,255,0.5);
-                }"}
+                    box-shadow: 0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.3);
+                }
+                .star-mid {
+                    box-shadow: 0 0 4px rgba(255,255,255,0.4);
+                }
+                .star-far {
+                    box-shadow: 0 0 2px rgba(255,255,255,0.3);
+                }
+                "}
             </style>
         </div>
     }
+}
+
+// Generate stars with given params
+fn generate_stars(count: usize, max_size: usize, min_opacity: f32, max_opacity: f32, _class: &str) -> Html {
+    let stars: Vec<Html> = (0..count).map(|i| {
+        // Use prime numbers for better distribution
+        let top = ((i * 73) % 100) as f32;      // 0-100% height
+        let left = ((i * 137) % 100) as f32;    // 0-100% width
+        let size = 1 + (i % max_size) as usize;
+        let opacity = min_opacity + ((i % 10) as f32 / 10.0) * (max_opacity - min_opacity);
+        
+        html! {
+            <div 
+                style={format!(
+                    "top: {}%; left: {}%; width: {}px; height: {}px; opacity: {:.2};",
+                    top, left, size, size, opacity
+                )}
+            />
+        }
+    }).collect();
+    
+    html! { <>{ stars }</> }
 }
 
 async fn sleep_ms(ms: u32) {

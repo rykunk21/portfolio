@@ -8,18 +8,11 @@ pub fn hero() -> Html {
             <main class="max-w-7xl mx-auto px-6 pt-16 pb-24 lg:pt-24">
                 <div class="relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div class="relative mx-auto w-full max-w-[500px] h-[520px] sm:h-[420px] lg:h-[650px] rounded-2xl overflow-hidden animate-float flex items-center justify-center z-0 mt-0 lg:mt-0 order-1 lg:order-2">
-                        /* Background smear */
-                        <img
-                            src="media/smear.png"
-                            alt=""
-                            aria-hidden="true"
-                            class="absolute inset-0 w-full h-full object-cover opacity-80"
-                        />
-                        /* Foreground portfolio image */
+                        /* Foreground portfolio image - no smear, no border */
                         <img
                             src="media/portfolio.png"
                             alt="Working session"
-                            class="relative z-10 w-full h-full object-contain rounded-xl shadow-lg border-4 border-highlight-500 shadow-highlight-500/20"
+                            class="relative z-10 w-full h-full object-contain"
                         />
                         /* Subtle highlight */
                         <div
