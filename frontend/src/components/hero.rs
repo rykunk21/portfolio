@@ -55,7 +55,7 @@ pub fn hero() -> Html {
                             <div class="relative aspect-square max-w-lg mx-auto rounded-2xl overflow-hidden"
                             >
                                 <ScrollVideo
-                                    src={"media/hero-scroll.mp4".to_string()}
+                                    src={"/media/hero-scroll.mp4".to_string()}
                                     scroll_distance={800}
                                     class={classes!("w-full", "h-full", "object-cover")}
                                 />

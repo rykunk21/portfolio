@@ -111,7 +111,7 @@ pub fn scroll_video(props: &ScrollVideoProps) -> Html {
             playsinline={true}
             preload="auto"
             onloadedmetadata={on_loaded}
-            style="object-fit: cover;"
+            style="width: 100%; height: 100%; object-fit: cover; display: block;"
         />
     }
 }
