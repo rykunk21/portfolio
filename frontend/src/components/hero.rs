@@ -1,77 +1,113 @@
 use yew::prelude::*;
-use crate::components::ui_depth::{UIDepth, LayerGroup};
+use crate::components::ui_depth::{UIDepth, FloatingElement};
 
 #[function_component(Hero)]
 pub fn hero() -> Html {
     html! {
-        <section class="relative overflow-x-hidden text-surface-50 min-h-screen flex flex-col items-center justify-center">
+        <section class="relative min-h-screen overflow-visible text-surface-50 flex items-center"
+        >
+            // ===== FLOATING ELEMENTS (around the edges) =====
             
-            // Background gradient (subtle, behind content)
-            <div class="absolute inset-0"
-                 style="background: radial-gradient(ellipse 80% 50% at 50% 30%, rgba(20,30,50,0.3) 0%, transparent 70%);"
-            />
+            // Far back: subtle glow blobs
+            <FloatingElement depth={0.2} top_pct={10} left_pct={5} width={200} height={200}
+            >
+                <div class="w-full h-full rounded-full bg-gradient-to-br from-highlight-500/10 to-transparent blur-3xl" />
+            </FloatingElement>
             
-            <LayerGroup base_depth={0.8}>
-                // Hero title - front layer
-                <div class="text-center mb-12 relative z-10">
-                    <UIDepth depth={0.7} shadow={0.5} z_offset={10}>
-                        <h1 class="text-5xl md:text-7xl font-light tracking-tight mb-4"
-                             style="color: var(--color-surface-50); text-shadow: 0 2px 20px rgba(0,0,0,0.3);"
+            <FloatingElement depth={0.15} top_pct={60} left_pct={85} width={250} height={250}
+            >
+                <div class="w-full h-full rounded-full bg-gradient-to-tl from-orange-500/10 to-transparent blur-3xl" />
+            </FloatingElement>
+            
+            // Mid depth: floating shapes
+            <FloatingElement depth={0.4} top_pct={20} left_pct={90} width={80} height={80}
+            >
+                <div class="w-full h-full rounded-full border border-surface-600/30 backdrop-blur-sm" />
+            </FloatingElement>
+            
+            <FloatingElement depth={0.35} top_pct={70} left_pct={8} width={60} height={60}
+            >
+                <div class="w-full h-full rotate-45 border border-highlight-500/20" />
+            </FloatingElement>
+            
+            // Near: floating accent elements
+            <FloatingElement depth={0.6} top_pct={15} left_pct={15} width={40} height={40}
+            >
+                <div class="w-full h-full rounded-lg bg-highlight-400/20 backdrop-blur-md" />
+            </FloatingElement>
+            
+            <FloatingElement depth={0.7} top_pct={80} left_pct={75} width={120} height={8}
+            >
+                <div class="w-full h-full rounded-full bg-gradient-to-r from-transparent via-surface-400/30 to-transparent" />
+            </FloatingElement>
+            
+            // ===== MAIN CONTENT (at depth=1.0, normal scroll) =====
+            <div class="relative z-20 w-full max-w-7xl mx-auto px-6 py-24"
+            >
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+                >
+                    // Image side
+                    <div class="order-1 lg:order-2 relative"
+                    >
+                        <UIDepth depth={1.0} shadow={0.3} z_offset={10}
                         >
-                            { "Portfolio" }
-                        </h1>
-                    </UIDepth>
+                            <div class="relative aspect-square max-w-lg mx-auto"
+                            >
+                                <img
+                                    src="media/portfolio.png"
+                                    alt="Working session"
+                                    class="w-full h-full object-contain drop-shadow-2xl"
+                                />
+                            </div>
+                        </UIDepth>
+                    </div>
                     
-                    <UIDepth depth={0.75} shadow={0.4} z_offset={8}>
-                        <p class="text-xl md:text-2xl font-light opacity-80 max-w-2xl mx-auto"
-                           style="color: var(--color-surface-300);"
+                    // Text side
+                    <div class="order-2 lg:order-1"
+                    >
+                        <UIDepth depth={1.0} shadow={0.2} z_offset={15}
                         >
-                            { "Showcasing creative work with depth" }
-                        </p>
-                    </UIDepth>
-                </div>
-                
-                // Hero image - middle layer (more depth)
-                <div class="relative w-full max-w-4xl mx-auto mb-12 px-4">
-                    <UIDepth depth={0.6} shadow={0.7} z_offset={5}>
-                        <div class="relative aspect-video rounded-lg overflow-hidden"
-                             style="transform: perspective(1000px) rotateY(-2deg) rotateX(2deg);"
+                            <h1 class="text-5xl lg:text-6xl font-bold leading-tight mb-6"
+                                 style="color: var(--color-surface-50);"
+                            >
+                                { "I design " }
+                                <span style="color: var(--color-highlight-500);">{ "& build" }</span>
+                                <br />
+                                { "human-centered" }
+                                <br />
+                                { "software" }
+                            </h1>
+                        </UIDepth>
+                        
+                        <UIDepth depth={1.0} shadow={0.1} z_offset={12} y_offset={20}
                         >
-                            <img
-                                src="media/portfolio.png"
-                                alt="Working session"
-                                class="w-full h-full object-contain"
-                            />
-                        </div>
-                    </UIDepth>
-                </div>
-                
-                // CTA Buttons - shallow layer, floating above
-                <div class="flex flex-wrap gap-4 justify-center relative z-10">
-                    <UIDepth depth={0.85} shadow={0.3} z_offset={15}>
-                        <a href="#services" 
-                           class="inline-flex items-center px-8 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105"
-                           style="background: var(--color-highlight-500); color: var(--color-neutral-950);"
+                            <p class="text-lg mb-8 max-w-md"
+                               style="color: var(--color-surface-400);"
+                            >
+                                { "From systems thinking to clean interfaces, I help teams turn complex ideas into reliable products." }
+                            </p>
+                        </UIDepth>
+                        
+                        <UIDepth depth={1.0} shadow={0.15} z_offset={14} y_offset={40}
                         >
-                            { "View Services" }
-                        </a>
-                    </UIDepth>
-                    
-                    <UIDepth depth={0.9} shadow={0.2} z_offset={12}>
-                        <a href="#contact"
-                           class="inline-flex items-center px-8 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105 border-2"
-                           style="border-color: var(--color-surface-600); color: var(--color-surface-50);"
-                        >
-                            { "Get in Touch" }
-                        </a>
-                    </UIDepth>
-                </div>
-            </LayerGroup>
-            
-            // Scroll indicator
-            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-                <div class="w-6 h-10 rounded-full border-2 border-surface-600 flex justify-center pt-2">
-                    <div class="w-1.5 h-3 bg-surface-400 rounded-full animate-pulse"></div>
+                            <div class="flex flex-wrap gap-4"
+                            >
+                                <a href="#contact"
+                                   class="px-8 py-3 rounded-full font-medium transition-all hover:scale-105"
+                                   style="background: var(--color-highlight-500); color: var(--color-neutral-950);"
+                                >
+                                    { "Start a conversation" }
+                                </a>
+                                
+                                <a href="#process"
+                                   class="px-8 py-3 rounded-full font-medium border transition-all hover:scale-105"
+                                   style="border-color: var(--color-surface-600); color: var(--color-surface-100);"
+                                >
+                                    { "View process" }
+                                </a>
+                            </div>
+                        </UIDepth>
+                    </div>
                 </div>
             </div>
         </section>
