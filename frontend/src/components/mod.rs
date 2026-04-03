@@ -11,5 +11,6 @@ pub mod hero;
 pub mod loading;
 pub mod portfolio;
 pub mod process;
+pub mod scroll_video;
 pub mod services;
 pub mod ui_depth;
