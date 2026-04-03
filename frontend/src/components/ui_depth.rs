@@ -1,4 +1,6 @@
 use yew::prelude::*;
+use wasm_bindgen::prelude::Closure;
+use wasm_bindgen::JsCast;
 /// UIDepth: Adds parallax depth to floating UI elements
 /// Elements move at different speeds relative to scroll
 /// Works with global page scroll, no containers needed
