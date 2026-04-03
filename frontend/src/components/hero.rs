@@ -1,131 +1,79 @@
 use yew::prelude::*;
-/// --- Hero component ---
+use crate::components::ui_depth::{UIDepth, LayerGroup};
+
 #[function_component(Hero)]
 pub fn hero() -> Html {
     html! {
-        <section class="relative overflow-x-hidden text-surface-50">
-
-            <main class="max-w-7xl mx-auto px-6 pt-16 pb-24 lg:pt-24">
-                <div class="relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div class="relative mx-auto w-full max-w-[500px] h-[520px] sm:h-[420px] lg:h-[650px] rounded-2xl overflow-hidden animate-float flex items-center justify-center z-0 mt-0 lg:mt-0 order-1 lg:order-2">
-                        /* Foreground portfolio image - no smear, no border */
-                        <img
-                            src="media/portfolio.png"
-                            alt="Working session"
-                            class="relative z-10 w-full h-full object-contain"
-                        />
-                        /* Subtle highlight */
-                        <div
-                            class="absolute inset-0 pointer-events-none z-20"
-                            style="background: linear-gradient(to top right, transparent, var(--color-neutral-900)/10, transparent);"
-                        ></div>
-
-                        // Mobile overlay title only
-                        <div class="absolute inset-0 z-30 flex items-end p-4 lg:hidden">
-                            <div class="bg-neutral-900/60 backdrop-blur-md rounded-lg p-3 max-w-[90%]">
-                                <h1 class="font-header text-3xl leading-tight font-bold" style="color: var(--color-surface-50);">
-                                    { "I design & build " }
-                                    <br />
-                                    <span style="color: var(--color-highlight-400);">{ "human-centered software" }</span>
-                                </h1>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="relative z-10 max-w-2xl order-2 lg:order-1 lg:block hidden">
-
-                        <h1 style="color: var(--color-highlight-500);" class="font-header text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 tracking-tight">
-                            { "I design & build " }
-                            <br />
-                            <span style="color: var(--color-surface-50);">{ "human-centered software" }</span>
+        <section class="relative overflow-x-hidden text-surface-50 min-h-screen flex flex-col items-center justify-center">
+            
+            // Background gradient (subtle, behind content)
+            <div class="absolute inset-0"
+                 style="background: radial-gradient(ellipse 80% 50% at 50% 30%, rgba(20,30,50,0.3) 0%, transparent 70%);"
+            />
+            
+            <LayerGroup base_depth={0.8}>
+                // Hero title - front layer
+                <div class="text-center mb-12 relative z-10">
+                    <UIDepth depth={0.7} shadow={0.5} z_offset={10}>
+                        <h1 class="text-5xl md:text-7xl font-light tracking-tight mb-4"
+                             style="color: var(--color-surface-50); text-shadow: 0 2px 20px rgba(0,0,0,0.3);"
+                        >
+                            { "Portfolio" }
                         </h1>
-
-                        <p style="color: var(--color-surface-400);" class="text-lg mb-8 leading-relaxed max-w-lg">
-                            { "From systems thinking to clean interfaces, I help teams and individuals turn complex ideas into reliable, maintainable products." }
+                    </UIDepth>
+                    
+                    <UIDepth depth={0.75} shadow={0.4} z_offset={8}>
+                        <p class="text-xl md:text-2xl font-light opacity-80 max-w-2xl mx-auto"
+                           style="color: var(--color-surface-300);"
+                        >
+                            { "Showcasing creative work with depth" }
                         </p>
-
-                        <div class="flex flex-col sm:flex-row gap-4 mb-10">
-                            <a
-                                href="#contact"
-                                style="background-color: var(--color-highlight-500); color: var(--color-neutral-950);"
-                                class="px-8 py-3.5 rounded-full font-medium hover:opacity-90 transition shadow-lg text-center"
-                            >
-                                { "Start a conversation" }
-                            </a>
-
-                            <a
-                                href="#process"
-                                style="background-color: var(--color-neutral-800); color: var(--color-surface-50); border-color: var(--color-neutral-600);"
-                                class="px-8 py-3.5 rounded-full font-medium hover:opacity-90 transition text-center border"
-                            >
-                                { "View my process" }
-                            </a>
+                    </UIDepth>
+                </div>
+                
+                // Hero image - middle layer (more depth)
+                <div class="relative w-full max-w-4xl mx-auto mb-12 px-4">
+                    <UIDepth depth={0.6} shadow={0.7} z_offset={5}>
+                        <div class="relative aspect-video rounded-lg overflow-hidden"
+                             style="transform: perspective(1000px) rotateY(-2deg) rotateX(2deg);"
+                        >
+                            <img
+                                src="media/portfolio.png"
+                                alt="Working session"
+                                class="w-full h-full object-contain"
+                            />
                         </div>
-
-                        <div class="
-                          space-y-3
-                          relative
-                          rounded-xl
-                          bg-neutral-800/70
-                          backdrop-blur-md
-                          p-4
-
-                          sm:bg-transparent
-                          sm:backdrop-blur-0
-                          sm:p-0
-                            ">
-                            { check("Systems-first thinking") }
-                            { check("Clear communication") }
-                            { check("Long-term maintainability") }
-                        </div>
-                    </div>
+                    </UIDepth>
                 </div>
-
-                <div class="lg:hidden flex flex-col gap-4 mt-6">
-                    <a
-                        href="#contact"
-                        class="px-6 py-3 rounded-full font-medium text-center"
-                        style="background-color: var(--color-highlight-500); color: var(--color-neutral-950);"
-                    >
-                        { "Start a conversation" }
-                    </a>
-                    <a
-                        href="#process"
-                        class="px-6 py-3 rounded-full font-medium text-center"
-                        style="background-color: var(--color-neutral-800); color: var(--color-surface-50); border: 1px solid var(--color-neutral-600);"
-                    >
-                        { "View my process" }
-                    </a>
+                
+                // CTA Buttons - shallow layer, floating above
+                <div class="flex flex-wrap gap-4 justify-center relative z-10">
+                    <UIDepth depth={0.85} shadow={0.3} z_offset={15}>
+                        <a href="#services" 
+                           class="inline-flex items-center px-8 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105"
+                           style="background: var(--color-highlight-500); color: var(--color-neutral-950);"
+                        >
+                            { "View Services" }
+                        </a>
+                    </UIDepth>
+                    
+                    <UIDepth depth={0.9} shadow={0.2} z_offset={12}>
+                        <a href="#contact"
+                           class="inline-flex items-center px-8 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105 border-2"
+                           style="border-color: var(--color-surface-600); color: var(--color-surface-50);"
+                        >
+                            { "Get in Touch" }
+                        </a>
+                    </UIDepth>
                 </div>
-
-                <div class="mt-20 rounded-3xl shadow-xl border border-neutral-800 p-8 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-neutral-700" style="background-color: var(--color-neutral-900);">
-                    { metric("10+ years", "Building software") }
-                    { metric("Rust • Web • Systems", "Primary focus") }
-                    { metric("Quality > Speed", "Core principle") }
+            </LayerGroup>
+            
+            // Scroll indicator
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+                <div class="w-6 h-10 rounded-full border-2 border-surface-600 flex justify-center pt-2">
+                    <div class="w-1.5 h-3 bg-surface-400 rounded-full animate-pulse"></div>
                 </div>
-            </main>
+            </div>
         </section>
-    }
-}
-
-// --- helpers ---
-
-fn check(text: &str) -> Html {
-    html! {
-        <div class="flex items-center gap-3" style="color: var(--color-surface-200);">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-highlight-500);">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm font-medium">{ text }</span>
-        </div>
-    }
-}
-
-fn metric(value: &str, label: &str) -> Html {
-    html! {
-        <div class="px-0 md:px-8 py-6 md:py-0">
-            <div class="text-3xl font-bold" style="color: var(--color-surface-50);">{ value }</div>
-            <div class="text-sm mt-1" style="color: var(--color-surface-400);">{ label }</div>
-        </div>
     }
 }
