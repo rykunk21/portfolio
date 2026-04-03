@@ -194,18 +194,26 @@ pub fn background(props: &BackgroundProps) -> Html {
 }
 
 fn generate_stars(count: usize, max_size: usize, min_opacity: f32, max_opacity: f32, class_name: String) -> Html {
-    let stars: Vec<Html> = (0..count).map(|i| {
-        let top = ((i * 73) % 100) as f32;
-        let left = ((i * 137) % 100) as f32;
-        let size = 1 + (i % max_size) as usize;
-        let opacity = min_opacity + ((i % 10) as f32 / 10.0) * (max_opacity - min_opacity);
+    use js_sys::Math::random;
+    
+    let stars: Vec<Html> = (0..count).map(|_| {
+        // True random positioning
+        let top = (random() * 100.0) as f32;
+        let left = (random() * 100.0) as f32;
+        
+        // Random size within range
+        let size = 1 + (random() * max_size as f64) as usize;
+        
+        // Random opacity within range
+        let opacity = min_opacity + (random() as f32) * (max_opacity - min_opacity);
         
         html! {
             <div class={class_name.clone()}
                 style={format!(
                     "top: {}%; left: {}%; width: {}px; height: {}px; opacity: {:.2};",
                     top, left, size, size, opacity
-                )}>
+                )}
+            >
             </div>
         }
     }).collect();
