@@ -39,16 +39,16 @@ pub fn loading_screen(props: &LoadingScreenProps) -> Html {
                 // Scramble animation: each letter cycles through random chars before locking in
                 for (i, target_char) in chars.iter().enumerate() {
                     let mut cycles = 0;
-                    let max_cycles = 8 + (i * 2); // Each letter takes longer to resolve
+                    let max_cycles = 4 + (i * 1); // QUICKER: fewer cycles per letter
                     
                     while cycles < max_cycles {
                         // Update this position with random char
                         current[i] = random_char();
                         display_text.set(current.iter().collect());
                         
-                        // Faster scramble at first, slower as we approach target
-                        let delay: i32 = 50 + (cycles * 20) as i32;
-                        sleep_ms(delay.min(150)).await;
+                        // QUICKER: lower base delay and multiplier
+                        let delay: i32 = 20 + (cycles * 10) as i32;
+                        sleep_ms(delay.min(80)).await; // QUICKER: lower max delay
                         cycles += 1;
                     }
                     
@@ -56,12 +56,12 @@ pub fn loading_screen(props: &LoadingScreenProps) -> Html {
                     current[i] = *target_char;
                     display_text.set(current.iter().collect());
                     
-                    // Brief pause between letters
-                    sleep_ms(100).await;
+                    // QUICKER: shorter pause between letters
+                    sleep_ms(50).await;
                 }
                 
-                // Pause with completed text
-                sleep_ms(400).await;
+                // QUICKER: shorter pause with completed text
+                sleep_ms(200).await;
                 
                 // Hide cursor
                 show_cursor.set(false);
@@ -70,7 +70,7 @@ pub fn loading_screen(props: &LoadingScreenProps) -> Html {
                 is_revealed.set(true);
                 
                 // Wait for exit animation to start
-                sleep_ms(600).await;
+                sleep_ms(300).await;
                 
                 // Hide loading screen
                 is_loading.set(false);
