@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use crate::components::ui_depth::{UIDepth, FloatingElement};
+use crate::components::scroll_video::ScrollVideo;
 
 #[function_component(Hero)]
 pub fn hero() -> Html {
@@ -46,17 +47,17 @@ pub fn hero() -> Html {
             >
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
                 >
-                    // Image side
+                    // Video side - scroll-scrubbed animation
                     <div class="order-1 lg:order-2 relative"
                     >
                         <UIDepth depth={1.0} shadow={0.3} z_offset={10}
                         >
-                            <div class="relative aspect-square max-w-lg mx-auto"
+                            <div class="relative aspect-square max-w-lg mx-auto rounded-2xl overflow-hidden"
                             >
-                                <img
-                                    src="media/portfolio.png"
-                                    alt="Working session"
-                                    class="w-full h-full object-contain drop-shadow-2xl"
+                                <ScrollVideo
+                                    src={"media/hero-scroll.mp4".to_string()}
+                                    scroll_distance={800}
+                                    class={classes!("w-full", "h-full", "object-cover")}
                                 />
                             </div>
                         </UIDepth>
