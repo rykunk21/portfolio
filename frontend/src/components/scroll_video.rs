@@ -1,13 +1,14 @@
 use yew::prelude::*;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 use web_sys::HtmlVideoElement;
+use std::cell::RefCell;
+use std::rc::Rc;
 
-/// Simple scroll-scrubbed video
-/// Maps scroll position to video time
+/// ScrollVideo: Maps scroll position to video time
 #[derive(Properties, PartialEq)]
 pub struct ScrollVideoProps {
     pub src: String,
-    /// Pixels to scroll for full video play
     #[prop_or(800)]
     pub scroll_distance: i32,
     #[prop_or_default]
@@ -17,24 +18,33 @@ pub struct ScrollVideoProps {
 #[function_component(ScrollVideo)]
 pub fn scroll_video(props: &ScrollVideoProps) -> Html {
     let video_ref = use_node_ref();
-    let is_ready = use_state(|| false);
+    // Use Rc<RefCell> so closure can read current values
+    let duration = Rc::new(RefCell::new(0.0_f64));
+    let video_top = Rc::new(RefCell::new(0.0_f64));
+    let is_ready = Rc::new(RefCell::new(false));
+    let scroll_dist = props.scroll_distance as f64;
 
-    // Setup scroll listener once video is loaded
     {
         let video_ref = video_ref.clone();
+        let duration = duration.clone();
+        let video_top = video_top.clone();
         let is_ready = is_ready.clone();
-        let scroll_distance = props.scroll_distance as f64;
 
         use_effect_with((), move |_| {
-            // Wait for video to have duration
-            let check_ready = {
+            let window = web_sys::window().unwrap();
+
+            // Poll until video loaded
+            let poll_video = {
                 let video_ref = video_ref.clone();
+                let duration = duration.clone();
                 let is_ready = is_ready.clone();
                 move || {
                     if let Some(video) = video_ref.cast::<HtmlVideoElement>() {
-                        if video.duration() > 0.0 {
+                        let d = video.duration();
+                        if d > 0.0 {
+                            *duration.borrow_mut() = d;
+                            *is_ready.borrow_mut() = true;
                             let _ = video.pause();
-                            is_ready.set(true);
                             return true;
                         }
                     }
@@ -42,56 +52,59 @@ pub fn scroll_video(props: &ScrollVideoProps) -> Html {
                 }
             };
 
-            // Poll until ready
-            let window = web_sys::window().unwrap();
-            let poll_closure = Closure::wrap(Box::new(move || {
-                if check_ready() {
-                    // Stop polling - video is ready
-                }
-            }) as Box<dyn FnMut()>);
-
             let interval_id = window.set_interval_with_callback_and_timeout_and_arguments_0(
-                poll_closure.as_ref().unchecked_ref(),
+                Closure::wrap(Box::new(move || { poll_video(); }) as Box<dyn FnMut()>)
+                    .as_ref().unchecked_ref(),
                 100,
             ).ok();
-            poll_closure.forget();
 
-            // Scroll handler
-            let scroll_closure = Closure::wrap(Box::new(move || {
-                if !*is_ready {
-                    return;
-                }
+            // Scroll handler - reads fresh values each time
+            let scroll_handler = {
+                let video_ref = video_ref.clone();
+                let duration = duration.clone();
+                let video_top = video_top.clone();
+                let is_ready = is_ready.clone();
+                
+                move || {
+                    if !*is_ready.borrow() {
+                        // Try to update position anyway
+                        if let Some(video) = video_ref.cast::<HtmlVideoElement>() {
+                            let rect = video.get_bounding_client_rect();
+                            if let Some(window) = web_sys::window() {
+                                if let Ok(scroll_y) = window.scroll_y() {
+                                    *video_top.borrow_mut() = scroll_y + rect.top();
+                                }
+                            }
+                        }
+                        return;
+                    }
 
-                if let (Some(window), Some(video)) = (
-                    web_sys::window(),
-                    video_ref.cast::<HtmlVideoElement>(),
-                ) {
-                    if let (Ok(scroll_y), Ok(rect)) = (
-                        window.scroll_y(),
-                        video.get_bounding_client_rect().dyn_into::<web_sys::DomRect>(),
+                    if let (Some(window), Some(video)) = (
+                        web_sys::window(),
+                        video_ref.cast::<HtmlVideoElement>(),
                     ) {
-                        let video_top = scroll_y + rect.top();
-                        let relative_scroll = scroll_y - video_top;
-                        let duration = video.duration();
-
-                        if duration > 0.0 {
-                            let progress = (relative_scroll / scroll_distance)
-                                .clamp(0.0, 1.0);
-                            let _ = video.set_current_time(progress * duration);
+                        if let Ok(scroll_y) = window.scroll_y() {
+                            let rect = video.get_bounding_client_rect();
+                            *video_top.borrow_mut() = scroll_y + rect.top();
+                            
+                            let relative_scroll = scroll_y - *video_top.borrow();
+                            let progress = (relative_scroll / scroll_dist).clamp(0.0, 1.0);
+                            let target = progress * *duration.borrow();
+                            
+                            let _ = video.set_current_time(target);
                         }
                     }
                 }
-            }) as Box<dyn FnMut()>);
+            };
 
-            if let Some(window) = web_sys::window() {
-                let _ = window.add_event_listener_with_callback(
-                    "scroll",
-                    scroll_closure.as_ref().unchecked_ref(),
-                );
-            }
-            scroll_closure.forget();
+            let closure = Closure::wrap(Box::new(scroll_handler) as Box<dyn FnMut()>);
+            let _ = window.add_event_listener_with_callback("scroll", closure.as_ref().unchecked_ref());
+            
+            // Also call once for initial position
+            closure.as_ref().unchecked_ref::<js_sys::Function>().call0(&JsValue::NULL).ok();
+            
+            closure.forget();
 
-            // Cleanup interval
             move || {
                 if let Some(id) = interval_id {
                     window.clear_interval_with_handle(id);
@@ -108,7 +121,7 @@ pub fn scroll_video(props: &ScrollVideoProps) -> Html {
             muted={true}
             playsinline={true}
             preload="auto"
-            style="width: 100%; height: 100%; object-fit: cover;"
+            style="width: 100%; height: 100%; object-fit: contain;"
         />
     }
 }
