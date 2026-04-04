@@ -52,7 +52,7 @@ pub fn hero() -> Html {
                     >
                         <UIDepth depth={1.0} shadow={0.3} z_offset={10}
                         >
-                            <div class="relative aspect-square max-w-lg mx-auto rounded-2xl overflow-hidden bg-neutral-950"
+                            <div class="relative max-w-lg mx-auto rounded-2xl overflow-hidden"
                             >
                                 <ScrollVideo
                                     src={"/media/hero-scroll.webm"}
