@@ -55,7 +55,7 @@ pub fn hero() -> Html {
                             <div class="relative max-w-lg mx-auto rounded-2xl overflow-hidden"
                             >
                                 <ScrollVideo
-                                    src={"/media/hero-scroll.webm"}
+                                    src={"/media/hero-scroll.mp4"}
                                     scroll_distance={800}
                                     class={classes!("w-full", "h-full", "object-contain")}
                                 />
