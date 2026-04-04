@@ -13,4 +13,5 @@ pub mod portfolio;
 pub mod process;
 pub mod scroll_video;
 pub mod services;
+pub mod sprite_animation;
 pub mod ui_depth;
