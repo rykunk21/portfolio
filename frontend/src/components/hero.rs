@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use crate::components::ui_depth::{UIDepth, FloatingElement};
-use crate::components::sprite_animation::SpriteAnimation;
+use crate::components::scroll_video::ScrollVideo;
 
 #[function_component(Hero)]
 pub fn hero() -> Html {
@@ -54,11 +54,10 @@ pub fn hero() -> Html {
                         >
                             <div class="relative aspect-square max-w-lg mx-auto rounded-2xl overflow-hidden bg-neutral-950"
                             >
-                                <SpriteAnimation
-                                    frame_path_template={"/media/anim/frame_{:04}.png"}
-                                    frame_count={250}
+                                <ScrollVideo
+                                    src={"/media/hero-scroll.webm"}
                                     scroll_distance={800}
-                                    class={classes!("w-full", "h-full")}
+                                    class={classes!("w-full", "h-full", "object-contain")}
                                 />
                             </div>
                         </UIDepth>
