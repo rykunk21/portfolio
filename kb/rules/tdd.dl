@@ -1,0 +1,52 @@
+% Rules: TDD Workflow Logic
+% These rules define the valid state transitions
+
+% Direct label relations
+rel in_phase(Issue, Phase) =
+    has_label(Issue, Phase),
+    (Phase == "backlog" ; Phase == "red" ; Phase == "green" ; Phase == "refactor" ; Phase == "done").
+
+% Issue has an associated PR (draft or ready)
+rel has_active_pr(Issue) =
+    references_issue(Pr, Issue),
+    pull_request(Pr, _, _).
+
+% Issue is in draft PR (Red phase validation)
+rel in_draft_pr(Issue) =
+    references_issue(Pr, Issue),
+    pull_request(Pr, _, true).
+
+% Issue is in ready PR (Green phase validation)
+rel in_ready_pr(Issue) =
+    references_issue(Pr, Issue),
+    pull_request(Pr, _, false).
+
+% TDD VIOLATION: Red phase but PR is ready (tests should be failing!)
+rel violation_red_ready(Issue) =
+    in_phase(Issue, "red"),
+    in_ready_pr(Issue),
+    !has_failing_tests(Issue).
+
+% TDD VIOLATION: Green phase but tests failing (should be passing!)
+rel violation_green_failing(Issue) =
+    in_phase(Issue, "green"),
+    has_failing_tests(Issue).
+
+% VALID: Red phase with failing tests (correct TDD!)
+rel valid_red_tdd(Issue) =
+    in_phase(Issue, "red"),
+    has_failing_tests(Issue),
+    in_draft_pr(Issue).
+
+% VALID: Green phase with passing tests (ready for refactor!)
+rel ready_for_refactor(Issue) =
+    in_phase(Issue, "green"),
+    !has_failing_tests(Issue),
+    in_ready_pr(Issue).
+
+% VALID: Refactor phase complete (no test changes, only code)
+rel ready_for_done(Issue) =
+    in_phase(Issue, "refactor"),
+    !has_failing_tests(Issue),
+    code_changed(Issue),
+    !tests_changed(Issue).
