@@ -1,3 +1,3 @@
 [workspace]
-members = ["backend", "frontend"]
+members = ["backend", "cargo-verify", "frontend"]
 resolver= "2"

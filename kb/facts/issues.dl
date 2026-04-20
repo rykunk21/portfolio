@@ -1,0 +1,13 @@
+% Facts: GitHub Issues (auto-generated from API)
+% Format: issue(number, title, created_at).
+% Format: has_label(issue, label).
+
+issue(12, "Implement contact form API", "2026-03-20T10:00:00Z").
+issue(15, "TEST-002: Verify backlog to red", "2026-03-25T14:30:00Z").
+issue(16, "Add dark mode toggle", "2026-03-26T09:15:00Z").
+issue(17, "Optimize WASM bundle size", "2026-03-26T11:00:00Z").
+
+has_label(12, "backlog").
+has_label(15, "red").
+has_label(16, "backlog").
+has_label(17, "green").

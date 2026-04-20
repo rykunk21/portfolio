@@ -103,7 +103,7 @@ pub fn loading_screen(props: &LoadingScreenProps) -> Html {
         <>
             if *is_loading {
                 <div 
-                    class="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950"
+                    class="fixed inset-0 z-[100] flex items-center justify-center bg-neutral-950"
                     style="transition: opacity 0.5s ease-out;"
                 >
                     <div 
